@@ -1,0 +1,12 @@
+# Secret lokal (jangan pernah di-commit)
+.dev.vars
+.env
+.env.*
+
+# Folder kerja tools
+node_modules/
+.wrangler/
+
+# File sistem operasi
+.DS_Store
+Thumbs.db
