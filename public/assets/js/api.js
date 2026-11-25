@@ -11,6 +11,7 @@
   var siteKeyTurnstile = null;
   var tokenTurnstile = null;
   var idWidget = null;
+  var backendSiap = true;     // diperbarui dari /api/config
 
   function fetchDenganBatasWaktu(url, opsi, ms) {
     var kontrol = new AbortController();
@@ -56,6 +57,24 @@
     beritahuApp();
   }
 
+  // ---------- Peringatan apabila backend belum dikonfigurasi ----------
+  function tampilkanBannerLayanan() {
+    if (document.getElementById("pesan-layanan")) return;
+    var acuan = document.getElementById("pesan-error");
+    if (!acuan) return;
+    var banner = document.createElement("div");
+    banner.className = "alert alert-error";
+    banner.id = "pesan-layanan";
+    banner.setAttribute("role", "alert");
+    var judul = document.createElement("strong");
+    judul.textContent = "Layanan registrasi belum siap.";
+    var isi = document.createElement("span");
+    isi.textContent = "Registrasi belum dapat dikirim saat ini. Silakan hubungi petugas Vendor Management.";
+    banner.appendChild(judul);
+    banner.appendChild(isi);
+    acuan.parentNode.insertBefore(banner, acuan);
+  }
+
   // ---------- Konfigurasi awal & sinkronisasi jam ----------
   var siap = (function muatKonfigurasi() {
     var t0 = Date.now();
@@ -69,6 +88,8 @@
         var waktuServer = Date.parse(d.serverTime);
         if (!isNaN(waktuServer)) selisihJamMs = waktuServer - Math.round((t0 + t1) / 2);
         siteKeyTurnstile = d.turnstileSiteKey || null;
+        backendSiap = d.backendSiap !== false;
+        if (!backendSiap) tampilkanBannerLayanan();
         if (siteKeyTurnstile) muatTurnstile();
         beritahuApp();
       })
@@ -125,6 +146,7 @@
     reverseGeocode: reverseGeocode,
     kirimRegistrasi: kirimRegistrasi,
     perluVerifikasi: function () { return !!siteKeyTurnstile; },
+    backendSiap: function () { return backendSiap; },
     tokenTersedia: function () { return !!tokenTurnstile; }
   };
 })();
