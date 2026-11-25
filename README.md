@@ -58,4 +58,4 @@ Perubahan berlaku paling lambat 5 menit.
 
 ## Keterbatasan
 
-GPS dapat dipalsukan dan kurang akurat di dalam gedung. Kamera browser tidak dapat membuktikan bahwa gambar berasal dari kamera fisik. Waktu watermark disinkronkan dengan jam server, tetapi tetap dihitung di perangkat. Sistem ini adalah alat bantu pencatatan, bukan bukti kehadiran mutlak.
+GPS dapat dipalsukan dan kurang akurat di dalam gedung. Kamera browser tidak dapat membuktikan bahwa gambar berasal dari kamera fisik. Waktu watermark disinkronkan dengan jam server, tetapi tetap dihitung di perangkat. Sistem ini adalah alat bantu pencatatan, bukan bukti kehadiran mutlak. 
