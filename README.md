@@ -49,7 +49,7 @@ Semua diisi dengan tipe **Secret**.
 
 Perubahan berlaku paling lambat 5 menit.
 
-## Pemeliharaan
+## Pemeliharaann
 
 - Lupa secret: jalankan `tampilkanSecret()` di Apps Script.
 - Secret bocor: jalankan `gantiSecret()`, lalu perbarui `GAS_SECRET` di Cloudflare.
