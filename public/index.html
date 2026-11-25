@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Uji Deployment | Vendor Management</title>
+  <style>
+    body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: #F8FAFC; color: #0F172A; }
+    header { background: #123354; color: #FFFFFF; padding: 20px; }
+    header h1 { margin: 0; font-size: 18px; letter-spacing: 0.5px; }
+    header p { margin: 4px 0 0; font-size: 13px; opacity: 0.8; }
+    main { padding: 16px; max-width: 480px; margin: 0 auto; }
+    .card { background: #FFFFFF; border-radius: 14px; padding: 4px 16px; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08); }
+    .row { display: flex; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: 1px solid #E2E8F0; font-size: 14px; }
+    .row:last-child { border-bottom: 0; }
+    .ok { color: #16A34A; font-weight: 600; white-space: nowrap; }
+    .no { color: #DC2626; font-weight: 600; white-space: nowrap; }
+    .info { color: #123354; font-weight: 600; text-align: right; }
+    small { display: block; margin-top: 12px; color: #64748B; font-size: 12px; word-break: break-all; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>VENDOR MANAGEMENT</h1>
+    <p>Uji Deployment dan Kompatibilitas Perangkat</p>
+  </header>
+  <main>
+    <div class="card" id="hasil"></div>
+    <small id="perangkat"></small>
+  </main>
+
+  <script>
+    var daftarCek = [
+      ["Koneksi HTTPS", window.isSecureContext === true],
+      ["Akses kamera (MediaDevices)", !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)],
+      ["Akses lokasi (Geolocation)", "geolocation" in navigator],
+      ["HTML Canvas", !!document.createElement("canvas").getContext],
+      ["Kompresi JPEG (Canvas toBlob)", typeof HTMLCanvasElement.prototype.toBlob === "function"],
+      ["Fetch API", "fetch" in window]
+    ];
+
+    var wadah = document.getElementById("hasil");
+
+    function tambahBaris(label, nilai, kelas) {
+      var baris = document.createElement("div");
+      baris.className = "row";
+      var kiri = document.createElement("span");
+      kiri.textContent = label;
+      var kanan = document.createElement("span");
+      kanan.className = kelas;
+      kanan.textContent = nilai;
+      baris.appendChild(kiri);
+      baris.appendChild(kanan);
+      wadah.appendChild(baris);
+    }
+
+    daftarCek.forEach(function (item) {
+      tambahBaris(item[0], item[1] ? "Tersedia" : "Tidak tersedia", item[1] ? "ok" : "no");
+    });
+
+    var waktuWIB = new Intl.DateTimeFormat("id-ID", {
+      timeZone: "Asia/Jakarta",
+      dateStyle: "long",
+      timeStyle: "medium"
+    }).format(new Date());
+    tambahBaris("Waktu perangkat (WIB)", waktuWIB, "info");
+
+    document.getElementById("perangkat").textContent = "Perangkat: " + navigator.userAgent;
+  </script>
+</body>
+</html>
