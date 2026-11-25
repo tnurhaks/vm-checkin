@@ -181,10 +181,13 @@
     if (!selesai["4"]) kurang.push("Persetujuan");
 
     var menungguVerifikasi = window.VMApi.perluVerifikasi() && !window.VMApi.tokenTersedia();
-    var siap = kurang.length === 0 && !menungguVerifikasi;
+    var layananSiap = window.VMApi.backendSiap();
+    var siap = kurang.length === 0 && !menungguVerifikasi && layananSiap;
 
     $("btn-submit").disabled = !siap || state.sedangMengirim || state.terkirim;
-    if (kurang.length > 0) {
+    if (!layananSiap) {
+      $("submit-hint").textContent = "Layanan registrasi belum siap. Silakan hubungi petugas.";
+    } else if (kurang.length > 0) {
       $("submit-hint").textContent = "Belum lengkap: " + kurang.join(", ") + ".";
     } else if (menungguVerifikasi) {
       $("submit-hint").textContent = "Menunggu verifikasi keamanan selesai.";
