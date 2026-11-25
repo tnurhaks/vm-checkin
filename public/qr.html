@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Poster QR Code | Vendor Management</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/css/qr.css">
+</head>
+<body>
+
+  <div class="toolbar">
+    <div class="toolbar-info">
+      <strong>Poster QR Code Registrasi</strong>
+      <span>Tujuan QR: <code id="url-tujuan">-</code></span>
+    </div>
+    <div class="toolbar-aksi">
+      <button type="button" class="btn btn-primary" id="btn-cetak">Cetak Poster (A4)</button>
+      <button type="button" class="btn" id="btn-unduh-poster">Unduh Poster PNG</button>
+      <button type="button" class="btn" id="btn-unduh-qr">Unduh QR PNG</button>
+    </div>
+  </div>
+
+  <div class="kanvas-pratinjau">
+    <article class="poster" id="poster">
+      <header class="poster-header">
+        <p class="poster-brand">VENDOR MANAGEMENT</p>
+      </header>
+
+      <section class="poster-body">
+        <p class="poster-welcome">WELCOME</p>
+        <p class="poster-sub">Registrasi Kehadiran Tamu</p>
+
+        <div class="poster-qr" id="qr-wadah" aria-label="QR Code registrasi"></div>
+
+        <p class="poster-cta">SCAN TO CHECK IN</p>
+        <p class="poster-desc">Silakan pindai QR Code menggunakan kamera smartphone Anda untuk melakukan registrasi kunjungan.</p>
+      </section>
+
+      <footer class="poster-footer">
+        <span class="poster-url" id="poster-url">-</span>
+      </footer>
+    </article>
+  </div>
+
+  <script src="/assets/js/vendor/qrcode.js" defer></script>
+  <script src="/assets/js/qr.js" defer></script>
+</body>
+</html>

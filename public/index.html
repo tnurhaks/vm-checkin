@@ -81,6 +81,7 @@
           <label for="whatsapp">Nomor WhatsApp <span class="req">*</span></label>
           <input id="whatsapp" name="whatsapp" type="tel" inputmode="tel" autocomplete="tel" maxlength="18" placeholder="Contoh: 0812 3456 7890" required>
           <p class="field-hint">Dapat diawali 08, 62, atau +62.</p>
+          <p class="field-hint" id="whatsapp-normal" hidden></p>
           <p class="field-error" id="whatsapp-error" hidden></p>
         </div>
       </section>
@@ -104,7 +105,10 @@
           <div><dt>Koordinat</dt><dd id="lokasi-koordinat">-</dd></div>
           <div><dt>Akurasi</dt><dd id="lokasi-akurasi">-</dd></div>
           <div><dt>Alamat</dt><dd id="lokasi-alamat">-</dd></div>
+          <div><dt>Peta</dt><dd><a id="lokasi-maps" href="#" target="_blank" rel="noopener">Buka di Google Maps</a></dd></div>
         </dl>
+
+        <p class="note note-warning" id="lokasi-catatan" role="status" hidden></p>
 
         <button type="button" class="btn btn-secondary btn-block" id="btn-lokasi">Aktifkan Lokasi</button>
       </section>
@@ -137,6 +141,7 @@
           <button type="button" class="btn btn-primary" id="btn-ambil-foto" hidden>Ambil Foto</button>
           <button type="button" class="btn btn-ghost" id="btn-ulangi-foto" hidden>Ambil Ulang</button>
         </div>
+        <p class="note note-info foto-catatan" id="foto-catatan" role="status" hidden></p>
         <p class="field-hint">Foto diambil langsung dari kamera. Foto dari galeri tidak dapat digunakan.</p>
       </section>
 
@@ -152,8 +157,9 @@
 
         <label class="consent" for="persetujuan">
           <input type="checkbox" id="persetujuan" name="persetujuan">
-          <span>Saya menyetujui pengumpulan dan pemrosesan data pribadi saya (nama, perusahaan, nomor WhatsApp, lokasi, dan foto) untuk keperluan pencatatan kehadiran tamu Vendor Management, sebagaimana dijelaskan dalam <a href="/privasi.html" target="_blank" rel="noopener">Pemberitahuan Pemrosesan Data Pribadi</a>.</span>
+          <span>Saya menyetujui pengumpulan dan pemrosesan data pribadi saya (nama, perusahaan, nomor WhatsApp, lokasi, dan foto) untuk keperluan pencatatan kehadiran tamu Vendor Management, sebagaimana dijelaskan dalam <a href="/privasi" target="_blank" rel="noopener">Pemberitahuan Pemrosesan Data Pribadi</a>.</span>
         </label>
+        <div class="turnstile-wadah" id="turnstile-wadah" hidden></div>
       </section>
 
       <div class="submit-area">
@@ -191,6 +197,11 @@
 
   <footer class="app-footer">Vendor Management &middot; Visitor Check-in</footer>
 
+  <script src="/assets/js/validation.js" defer></script>
+  <script src="/assets/js/api.js" defer></script>
   <script src="/assets/js/app.js" defer></script>
+  <script src="/assets/js/location.js" defer></script>
+  <script src="/assets/js/watermark.js" defer></script>
+  <script src="/assets/js/camera.js" defer></script>
 </body>
 </html>

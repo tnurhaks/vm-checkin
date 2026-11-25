@@ -1,0 +1,92 @@
+/* =========================================================
+   Vendor Management - Visitor Check-in
+   File: public/assets/css/qr.css  (halaman poster QR)
+   ========================================================= */
+:root {
+  --navy: #123354;
+  --blue: #2563EB;
+  --bg: #F8FAFC;
+  --text: #0F172A;
+  --muted: #64748B;
+  --border: #E2E8F0;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: #E9EEF5;
+  color: var(--text);
+}
+
+/* ---------- Toolbar (tidak ikut tercetak) ---------- */
+.toolbar {
+  position: sticky; top: 0; z-index: 5;
+  display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between;
+  padding: 14px 20px; background: #FFFFFF; border-bottom: 1px solid var(--border);
+}
+.toolbar-info { display: flex; flex-direction: column; gap: 2px; font-size: 13px; }
+.toolbar-info strong { color: var(--navy); font-size: 15px; }
+.toolbar-info code { background: var(--bg); padding: 2px 6px; border-radius: 6px; font-size: 12px; }
+.toolbar-aksi { display: flex; flex-wrap: wrap; gap: 8px; }
+.btn {
+  font: inherit; font-weight: 700; font-size: 13px; cursor: pointer;
+  padding: 10px 14px; border-radius: 10px; border: 1.5px solid var(--border);
+  background: #FFFFFF; color: var(--navy);
+}
+.btn-primary { background: var(--blue); border-color: var(--blue); color: #FFFFFF; }
+
+/* ---------- Area pratinjau ---------- */
+.kanvas-pratinjau { padding: 28px 16px 48px; display: flex; justify-content: center; }
+
+/* ---------- Poster A4 (210 x 297 mm) ---------- */
+.poster {
+  width: 210mm; height: 297mm; max-width: 100%;
+  background: #FFFFFF; box-shadow: 0 10px 40px rgba(15, 23, 42, 0.15);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.poster-header {
+  background: var(--navy); color: #FFFFFF;
+  padding: 18mm 16mm 14mm; text-align: center;
+  border-bottom: 3mm solid var(--blue);
+}
+.poster-brand { margin: 0; font-size: 26pt; font-weight: 800; letter-spacing: 4pt; }
+
+.poster-body {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 10mm 18mm; text-align: center;
+}
+.poster-welcome { margin: 0; font-size: 48pt; font-weight: 800; color: var(--navy); letter-spacing: 6pt; line-height: 1.1; }
+.poster-sub { margin: 3mm 0 10mm; font-size: 18pt; font-weight: 600; color: var(--muted); }
+
+.poster-qr {
+  width: 105mm; height: 105mm; padding: 6mm;
+  border: 1.2mm solid var(--navy); border-radius: 6mm; background: #FFFFFF;
+}
+.poster-qr svg { width: 100%; height: 100%; display: block; }
+
+.poster-cta {
+  margin: 10mm 0 4mm; display: inline-block;
+  font-size: 24pt; font-weight: 800; color: #FFFFFF; letter-spacing: 3pt;
+  background: var(--blue); padding: 3mm 10mm; border-radius: 30mm;
+}
+.poster-desc { margin: 0; max-width: 150mm; font-size: 14pt; line-height: 1.5; color: var(--text); }
+
+.poster-footer {
+  background: var(--bg); border-top: 1px solid var(--border);
+  padding: 6mm 16mm; text-align: center; font-size: 10pt; color: var(--muted);
+}
+
+/* ---------- Tampilan layar kecil ---------- */
+@media screen and (max-width: 840px) {
+  .poster { height: auto; aspect-ratio: 210 / 297; }
+}
+
+/* ---------- Cetak ---------- */
+@page { size: A4 portrait; margin: 0; }
+@media print {
+  body { background: #FFFFFF; }
+  .toolbar { display: none; }
+  .kanvas-pratinjau { padding: 0; }
+  .poster { box-shadow: none; width: 210mm; height: 297mm; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}

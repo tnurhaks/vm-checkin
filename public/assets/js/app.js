@@ -1,13 +1,16 @@
 /* =========================================================
    Vendor Management - Visitor Check-in
    File: public/assets/js/app.js
-   Tahap 2.2: jam WIB + mode pratinjau tampilan.
-   Logika form, validasi, GPS, dan kamera ditambahkan di tahap berikutnya.
+   Pengendali utama halaman registrasi: state, validasi form,
+   indikator langkah, tombol Submit, pencegahan kirim ganda,
+   dan koordinasi modul lokasi, kamera, serta API.
    ========================================================= */
 (function () {
   "use strict";
 
+  var V = window.VMValidasi;
   var ZONA_WAKTU = "Asia/Jakarta";
+  var VERSI_PERSETUJUAN = "1.0";
 
   var formatTanggal = new Intl.DateTimeFormat("id-ID", {
     timeZone: ZONA_WAKTU, day: "2-digit", month: "long", year: "numeric"
@@ -18,66 +21,278 @@
 
   function $(id) { return document.getElementById(id); }
 
-  // ---------- Jam WIB (read-only) ----------
+  function buatIdUnik() {
+    if (window.crypto && typeof window.crypto.randomUUID === "function") {
+      return window.crypto.randomUUID();
+    }
+    var bytes = new Uint8Array(16);
+    window.crypto.getRandomValues(bytes);
+    return Array.prototype.map.call(bytes, function (b) {
+      return ("0" + b.toString(16)).slice(-2);
+    }).join("");
+  }
+
+  // ---------- State aplikasi ----------
+  var state = {
+    identitas: { nama: "", perusahaan: "", whatsapp: "", valid: false },
+    lokasi: null,
+    foto: null,
+    persetujuan: false,
+    waktuMulaiIsi: null,
+    idempotencyKey: buatIdUnik(), // tetap sama saat kirim ulang, mencegah data ganda
+    sedangMengirim: false,
+    terkirim: false
+  };
+
+  // ---------- Jam WIB (disinkronkan dengan server) ----------
   function perbaruiJam() {
-    var sekarang = new Date();
+    var sekarang = window.VMApi.sekarang();
     $("tanggal-kunjungan").textContent = formatTanggal.format(sekarang);
     $("waktu-sekarang").textContent = formatWaktu.format(sekarang) + " WIB";
   }
   perbaruiJam();
   setInterval(perbaruiJam, 1000);
 
-  // ---------- Mode pratinjau tampilan (sementara, untuk review desain) ----------
-  // Contoh: /?tampilan=lengkap | sukses | error | loading
-  var mode = new URLSearchParams(window.location.search).get("tampilan");
+  // ---------- Validasi identitas ----------
+  var FIELD = {
+    nama:       { input: $("nama"),       wadah: $("field-nama"),       error: $("nama-error"),       cek: V.validasiNama },
+    perusahaan: { input: $("perusahaan"), wadah: $("field-perusahaan"), error: $("perusahaan-error"), cek: V.validasiPerusahaan },
+    whatsapp:   { input: $("whatsapp"),   wadah: $("field-whatsapp"),   error: $("whatsapp-error"),   cek: V.validasiWhatsApp }
+  };
+  var URUTAN_FIELD = ["nama", "perusahaan", "whatsapp"];
 
-  if (mode === "lengkap") {
-    $("nama").value = "Budi Santoso (Data Dummy)";
-    $("perusahaan").value = "PT Contoh Dummy";
-    $("whatsapp").value = "0812 0000 0000";
+  function tampilkanErrorField(key, pesan) {
+    var f = FIELD[key];
+    f.wadah.classList.add("has-error");
+    f.error.textContent = pesan;
+    f.error.hidden = false;
+    f.input.setAttribute("aria-invalid", "true");
+  }
 
-    $("status-lokasi").setAttribute("data-state", "success");
-    $("status-lokasi-teks").textContent = "Lokasi berhasil terdeteksi";
-    $("detail-lokasi").hidden = false;
-    $("lokasi-koordinat").textContent = "-6.186486, 106.822745";
-    $("lokasi-akurasi").textContent = "± 18 meter";
-    $("lokasi-alamat").textContent = "Jl. Contoh No. 1, Jakarta Pusat";
-    $("btn-lokasi").textContent = "Perbarui Lokasi";
+  function hapusErrorField(key) {
+    var f = FIELD[key];
+    f.wadah.classList.remove("has-error");
+    f.error.textContent = "";
+    f.error.hidden = true;
+    f.input.removeAttribute("aria-invalid");
+  }
 
-    $("persetujuan").checked = true;
-    $("btn-submit").disabled = false;
-    $("submit-hint").textContent = "Seluruh langkah telah lengkap.";
+  function cekField(key, tampilkanError) {
+    var f = FIELD[key];
+    var hasil = f.cek(f.input.value);
+    if (hasil.valid) {
+      hapusErrorField(key);
+      state.identitas[key] = hasil.nilai;
+    } else {
+      state.identitas[key] = "";
+      if (tampilkanError) tampilkanErrorField(key, hasil.pesan);
+    }
+    if (key === "whatsapp") {
+      var info = $("whatsapp-normal");
+      info.hidden = !hasil.valid;
+      info.textContent = hasil.valid ? "Akan disimpan sebagai " + hasil.nilai : "";
+    }
+    return hasil.valid;
+  }
 
-    ["kartu-identitas", "kartu-lokasi", "kartu-persetujuan"].forEach(function (id) {
-      $(id).classList.add("is-done");
+  function cekIdentitas(tampilkanError) {
+    var semuaValid = true;
+    URUTAN_FIELD.forEach(function (key) {
+      if (!cekField(key, tampilkanError)) semuaValid = false;
     });
-    document.querySelectorAll(".step").forEach(function (el) {
+    state.identitas.valid = semuaValid;
+    return semuaValid;
+  }
+
+  // Foto memuat nama & perusahaan di watermark. Jika data berubah, foto harus diambil ulang.
+  function periksaKonsistensiFoto() {
+    if (!state.foto) return;
+    if (state.foto.nama !== state.identitas.nama || state.foto.perusahaan !== state.identitas.perusahaan) {
+      resetFoto("Data identitas berubah setelah foto diambil. Silakan ambil ulang foto agar watermark sesuai.");
+    }
+  }
+
+  function resetFoto(pesan) {
+    state.foto = null;
+    if (window.VMKamera) window.VMKamera.reset(pesan);
+    perbaruiStatus();
+  }
+
+  URUTAN_FIELD.forEach(function (key) {
+    var f = FIELD[key];
+
+    f.input.addEventListener("input", function () {
+      if (!state.waktuMulaiIsi) state.waktuMulaiIsi = window.VMApi.sekarang().toISOString();
+      if (key === "whatsapp") {
+        var bersih = f.input.value.replace(/[^\d+\s\-]/g, "");
+        if (bersih !== f.input.value) f.input.value = bersih;
+      }
+      cekField(key, f.wadah.classList.contains("has-error"));
+      perbaruiStatus();
+    });
+
+    f.input.addEventListener("blur", function () {
+      if (f.input.value.trim() !== "") cekField(key, true);
+      perbaruiStatus();
+      periksaKonsistensiFoto();
+    });
+  });
+
+  $("persetujuan").addEventListener("change", function (e) {
+    state.persetujuan = e.target.checked;
+    perbaruiStatus();
+  });
+
+  // ---------- Indikator langkah & tombol Submit ----------
+  function perbaruiStatus() {
+    cekIdentitas(false);
+
+    var selesai = {
+      "1": state.identitas.valid,
+      "2": !!state.lokasi,
+      "3": !!state.foto,
+      "4": state.persetujuan
+    };
+
+    var aktifSudahDitetapkan = false;
+    Array.prototype.forEach.call(document.querySelectorAll(".step"), function (el) {
+      var nomor = el.getAttribute("data-step");
       el.classList.remove("is-active");
-      if (el.getAttribute("data-step") !== "3") { el.classList.add("is-done"); }
-      else { el.classList.add("is-active"); }
+      el.classList.remove("is-done");
+      if (selesai[nomor]) {
+        el.classList.add("is-done");
+      } else if (!aktifSudahDitetapkan) {
+        el.classList.add("is-active");
+        aktifSudahDitetapkan = true;
+      }
     });
+
+    $("kartu-identitas").classList.toggle("is-done", selesai["1"]);
+    $("kartu-lokasi").classList.toggle("is-done", selesai["2"]);
+    $("kartu-foto").classList.toggle("is-done", selesai["3"]);
+    $("kartu-persetujuan").classList.toggle("is-done", selesai["4"]);
+
+    if (window.VMKamera) window.VMKamera.setSiap(selesai["1"] && selesai["2"]);
+
+    var kurang = [];
+    if (!selesai["1"]) kurang.push("Identitas");
+    if (!selesai["2"]) kurang.push("Lokasi");
+    if (!selesai["3"]) kurang.push("Foto");
+    if (!selesai["4"]) kurang.push("Persetujuan");
+
+    var menungguVerifikasi = window.VMApi.perluVerifikasi() && !window.VMApi.tokenTersedia();
+    var siap = kurang.length === 0 && !menungguVerifikasi;
+
+    $("btn-submit").disabled = !siap || state.sedangMengirim || state.terkirim;
+    if (kurang.length > 0) {
+      $("submit-hint").textContent = "Belum lengkap: " + kurang.join(", ") + ".";
+    } else if (menungguVerifikasi) {
+      $("submit-hint").textContent = "Menunggu verifikasi keamanan selesai.";
+    } else {
+      $("submit-hint").textContent = "Seluruh langkah telah lengkap. Silakan kirim registrasi.";
+    }
+    return siap;
   }
 
-  if (mode === "error") {
-    $("pesan-error").hidden = false;
-    $("field-whatsapp").classList.add("has-error");
-    $("whatsapp").value = "12345";
-    $("whatsapp-error").hidden = false;
-    $("whatsapp-error").textContent = "Nomor WhatsApp tidak valid. Gunakan format 08xxxxxxxxxx.";
-    $("status-lokasi").setAttribute("data-state", "error");
-    $("status-lokasi-teks").textContent = "Akses lokasi ditolak";
+  // ---------- Pengiriman ----------
+  $("form-registrasi").addEventListener("submit", function (e) {
+    e.preventDefault();
+    if (state.sedangMengirim || state.terkirim) return; // cegah kirim ganda
+
+    var identitasValid = cekIdentitas(true);
+    var siap = perbaruiStatus();
+    if (!siap) {
+      if (!identitasValid) {
+        var pertama = URUTAN_FIELD.filter(function (k) { return FIELD[k].wadah.classList.contains("has-error"); })[0];
+        if (pertama) FIELD[pertama].input.focus();
+      }
+      return;
+    }
+    kirim();
+  });
+
+  function susunPayload() {
+    return {
+      idempotencyKey: state.idempotencyKey,
+      nama: state.identitas.nama,
+      perusahaan: state.identitas.perusahaan,
+      whatsapp: state.identitas.whatsapp,
+      waktuMulaiIsi: state.waktuMulaiIsi || window.VMApi.sekarang().toISOString(),
+      persetujuan: state.persetujuan === true,
+      versiPersetujuan: VERSI_PERSETUJUAN,
+      lokasi: {
+        latitude: state.lokasi.latitude,
+        longitude: state.lokasi.longitude,
+        akurasi: state.lokasi.akurasi,
+        alamat: state.lokasi.alamat || null,
+        waktuLokasi: state.lokasi.waktuLokasi
+      },
+      foto: {
+        base64: state.foto.base64,
+        waktuFoto: state.foto.waktuFoto
+      }
+    };
   }
 
-  if (mode === "loading") {
+  function kirim() {
+    state.sedangMengirim = true;
+    $("btn-submit").disabled = true;
+    $("btn-submit").textContent = "Mengirim...";
+    $("pesan-error").hidden = true;
     $("loading").hidden = false;
+
+    window.VMApi.kirimRegistrasi(susunPayload())
+      .then(function (hasil) {
+        state.terkirim = true;
+        tampilkanSukses(hasil);
+      })
+      .catch(function (err) {
+        tampilkanErrorKirim(err && err.pesan ? err.pesan : "Terjadi kendala koneksi. Silakan coba kembali.");
+      })
+      .finally(function () {
+        state.sedangMengirim = false;
+        $("loading").hidden = true;
+        $("btn-submit").textContent = "Kirim Registrasi";
+        perbaruiStatus();
+      });
   }
 
-  if (mode === "sukses") {
+  function tampilkanSukses(hasil) {
+    var waktu = hasil && hasil.waktuServer ? new Date(hasil.waktuServer) : window.VMApi.sekarang();
+    $("sukses-id").textContent = (hasil && hasil.registrationId) || "-";
+    $("sukses-nama").textContent = state.identitas.nama;
+    $("sukses-perusahaan").textContent = state.identitas.perusahaan;
+    $("sukses-waktu").textContent = formatTanggal.format(waktu) + ", " + formatWaktu.format(waktu) + " WIB";
     $("halaman-form").hidden = true;
     $("halaman-sukses").hidden = false;
-    $("sukses-id").textContent = "VM-20261125-DUMMY1";
-    $("sukses-nama").textContent = "Budi Santoso (Data Dummy)";
-    $("sukses-perusahaan").textContent = "PT Contoh Dummy";
-    $("sukses-waktu").textContent = formatTanggal.format(new Date()) + ", " + formatWaktu.format(new Date()) + " WIB";
+    state.foto = null; // lepaskan data foto dari memori
+    window.scrollTo(0, 0);
   }
+
+  function tampilkanErrorKirim(pesan) {
+    $("pesan-error-teks").textContent = pesan;
+    $("pesan-error").hidden = false;
+    $("pesan-error").scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+
+  // ---------- Antarmuka untuk modul lain ----------
+  window.VMApp = {
+    setLokasi: function (data) {
+      var lama = state.lokasi;
+      state.lokasi = data || null;
+      var berpindah = state.foto && (!data || !lama ||
+        data.latitude !== lama.latitude || data.longitude !== lama.longitude);
+      if (berpindah) {
+        resetFoto("Lokasi diperbarui setelah foto diambil. Silakan ambil ulang foto agar watermark sesuai.");
+        return;
+      }
+      perbaruiStatus();
+    },
+    setFoto: function (data) { state.foto = data || null; perbaruiStatus(); },
+    getIdentitas: function () { return { nama: state.identitas.nama, perusahaan: state.identitas.perusahaan }; },
+    getLokasi: function () { return state.lokasi; },
+    perbaruiStatus: perbaruiStatus
+  };
+
+  perbaruiStatus();
 })();
