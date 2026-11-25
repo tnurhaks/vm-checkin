@@ -2,70 +2,195 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Uji Deployment | Vendor Management</title>
-  <style>
-    body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: #F8FAFC; color: #0F172A; }
-    header { background: #123354; color: #FFFFFF; padding: 20px; }
-    header h1 { margin: 0; font-size: 18px; letter-spacing: 0.5px; }
-    header p { margin: 4px 0 0; font-size: 13px; opacity: 0.8; }
-    main { padding: 16px; max-width: 480px; margin: 0 auto; }
-    .card { background: #FFFFFF; border-radius: 14px; padding: 4px 16px; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08); }
-    .row { display: flex; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: 1px solid #E2E8F0; font-size: 14px; }
-    .row:last-child { border-bottom: 0; }
-    .ok { color: #16A34A; font-weight: 600; white-space: nowrap; }
-    .no { color: #DC2626; font-weight: 600; white-space: nowrap; }
-    .info { color: #123354; font-weight: 600; text-align: right; }
-    small { display: block; margin-top: 12px; color: #64748B; font-size: 12px; word-break: break-all; }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#123354">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Registrasi Kehadiran Tamu | Vendor Management</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/css/style.css">
 </head>
 <body>
-  <header>
-    <h1>VENDOR MANAGEMENT</h1>
-    <p>Uji Deployment dan Kompatibilitas Perangkat</p>
+
+  <header class="app-header">
+    <div class="container header-inner">
+      <div class="brand-mark" aria-hidden="true">VM</div>
+      <div>
+        <p class="brand-title">VENDOR MANAGEMENT</p>
+        <p class="brand-sub">Visitor Check-in</p>
+      </div>
+    </div>
   </header>
-  <main>
-    <div class="card" id="hasil"></div>
-    <small id="perangkat"></small>
+
+  <!-- ===================== HALAMAN FORMULIR ===================== -->
+  <main class="container" id="halaman-form">
+
+    <section class="welcome">
+      <h1>Selamat datang</h1>
+      <p>Silakan lengkapi registrasi kehadiran Anda. Proses ini membutuhkan waktu sekitar 1 menit.</p>
+      <div class="datetime">
+        <div class="dt-item">
+          <span class="dt-label">Tanggal</span>
+          <span class="dt-value" id="tanggal-kunjungan">-</span>
+        </div>
+        <div class="dt-item">
+          <span class="dt-label">Waktu</span>
+          <span class="dt-value" id="waktu-sekarang">-</span>
+        </div>
+      </div>
+    </section>
+
+    <ol class="stepper" aria-label="Tahapan registrasi">
+      <li class="step is-active" data-step="1"><span class="step-dot">1</span><span class="step-label">Identitas</span></li>
+      <li class="step" data-step="2"><span class="step-dot">2</span><span class="step-label">Lokasi</span></li>
+      <li class="step" data-step="3"><span class="step-dot">3</span><span class="step-label">Foto</span></li>
+      <li class="step" data-step="4"><span class="step-dot">4</span><span class="step-label">Persetujuan</span></li>
+    </ol>
+
+    <div class="alert alert-error" id="pesan-error" role="alert" hidden>
+      <strong>Registrasi belum berhasil.</strong>
+      <span id="pesan-error-teks">Terjadi kendala koneksi. Silakan coba kembali.</span>
+    </div>
+
+    <form id="form-registrasi" novalidate>
+
+      <!-- Kartu 1: Identitas -->
+      <section class="card" id="kartu-identitas">
+        <div class="card-head">
+          <span class="card-num">1</span>
+          <div>
+            <h2>Identitas Tamu</h2>
+            <p>Isi sesuai identitas Anda.</p>
+          </div>
+        </div>
+
+        <div class="field" id="field-nama">
+          <label for="nama">Nama lengkap <span class="req">*</span></label>
+          <input id="nama" name="nama" type="text" autocomplete="name" maxlength="100" placeholder="Contoh: Budi Santoso" required>
+          <p class="field-error" id="nama-error" hidden></p>
+        </div>
+
+        <div class="field" id="field-perusahaan">
+          <label for="perusahaan">Nama perusahaan <span class="req">*</span></label>
+          <input id="perusahaan" name="perusahaan" type="text" autocomplete="organization" maxlength="120" placeholder="Contoh: PT Maju Bersama" required>
+          <p class="field-error" id="perusahaan-error" hidden></p>
+        </div>
+
+        <div class="field" id="field-whatsapp">
+          <label for="whatsapp">Nomor WhatsApp <span class="req">*</span></label>
+          <input id="whatsapp" name="whatsapp" type="tel" inputmode="tel" autocomplete="tel" maxlength="18" placeholder="Contoh: 0812 3456 7890" required>
+          <p class="field-hint">Dapat diawali 08, 62, atau +62.</p>
+          <p class="field-error" id="whatsapp-error" hidden></p>
+        </div>
+      </section>
+
+      <!-- Kartu 2: Lokasi -->
+      <section class="card" id="kartu-lokasi">
+        <div class="card-head">
+          <span class="card-num">2</span>
+          <div>
+            <h2>Lokasi Kehadiran</h2>
+            <p>Izinkan akses lokasi untuk mencatat titik kehadiran Anda.</p>
+          </div>
+        </div>
+
+        <div class="status" id="status-lokasi" data-state="idle">
+          <span class="status-dot"></span>
+          <span id="status-lokasi-teks">Lokasi belum diaktifkan</span>
+        </div>
+
+        <dl class="detail-list" id="detail-lokasi" hidden>
+          <div><dt>Koordinat</dt><dd id="lokasi-koordinat">-</dd></div>
+          <div><dt>Akurasi</dt><dd id="lokasi-akurasi">-</dd></div>
+          <div><dt>Alamat</dt><dd id="lokasi-alamat">-</dd></div>
+        </dl>
+
+        <button type="button" class="btn btn-secondary btn-block" id="btn-lokasi">Aktifkan Lokasi</button>
+      </section>
+
+      <!-- Kartu 3: Foto -->
+      <section class="card" id="kartu-foto">
+        <div class="card-head">
+          <span class="card-num">3</span>
+          <div>
+            <h2>Foto Kehadiran</h2>
+            <p>Ambil foto diri Anda secara langsung melalui kamera.</p>
+          </div>
+        </div>
+
+        <div class="camera-frame">
+          <video id="kamera-video" playsinline muted autoplay hidden></video>
+          <img id="foto-hasil" alt="Hasil foto kehadiran dengan watermark" hidden>
+          <div class="camera-placeholder" id="kamera-placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h1.6l1.2-1.8A1.5 1.5 0 0 1 9.5 3.5h5a1.5 1.5 0 0 1 1.2.7L16.9 6h1.6A2.5 2.5 0 0 1 21 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/>
+              <circle cx="12" cy="12.5" r="3.5"/>
+            </svg>
+            <p>Kamera belum diaktifkan</p>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button type="button" class="btn btn-secondary" id="btn-kamera">Aktifkan Kamera</button>
+          <button type="button" class="btn btn-ghost" id="btn-ganti-kamera" hidden>Ganti Kamera</button>
+          <button type="button" class="btn btn-primary" id="btn-ambil-foto" hidden>Ambil Foto</button>
+          <button type="button" class="btn btn-ghost" id="btn-ulangi-foto" hidden>Ambil Ulang</button>
+        </div>
+        <p class="field-hint">Foto diambil langsung dari kamera. Foto dari galeri tidak dapat digunakan.</p>
+      </section>
+
+      <!-- Kartu 4: Persetujuan -->
+      <section class="card" id="kartu-persetujuan">
+        <div class="card-head">
+          <span class="card-num">4</span>
+          <div>
+            <h2>Persetujuan</h2>
+            <p>Baca dan setujui pemrosesan data pribadi.</p>
+          </div>
+        </div>
+
+        <label class="consent" for="persetujuan">
+          <input type="checkbox" id="persetujuan" name="persetujuan">
+          <span>Saya menyetujui pengumpulan dan pemrosesan data pribadi saya (nama, perusahaan, nomor WhatsApp, lokasi, dan foto) untuk keperluan pencatatan kehadiran tamu Vendor Management, sebagaimana dijelaskan dalam <a href="/privasi.html" target="_blank" rel="noopener">Pemberitahuan Pemrosesan Data Pribadi</a>.</span>
+        </label>
+      </section>
+
+      <div class="submit-area">
+        <button type="submit" class="btn btn-primary btn-block btn-lg" id="btn-submit" disabled>Kirim Registrasi</button>
+        <p class="submit-hint" id="submit-hint">Lengkapi seluruh langkah untuk mengirim registrasi.</p>
+      </div>
+    </form>
   </main>
 
-  <script>
-    var daftarCek = [
-      ["Koneksi HTTPS", window.isSecureContext === true],
-      ["Akses kamera (MediaDevices)", !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)],
-      ["Akses lokasi (Geolocation)", "geolocation" in navigator],
-      ["HTML Canvas", !!document.createElement("canvas").getContext],
-      ["Kompresi JPEG (Canvas toBlob)", typeof HTMLCanvasElement.prototype.toBlob === "function"],
-      ["Fetch API", "fetch" in window]
-    ];
+  <!-- ===================== HALAMAN SUKSES ===================== -->
+  <main class="container" id="halaman-sukses" hidden>
+    <section class="card success-card">
+      <div class="success-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M5 12.5l4.5 4.5L19 7.5"/>
+        </svg>
+      </div>
+      <h1>Registrasi Berhasil</h1>
+      <p>Terima kasih, kehadiran Anda telah tercatat.</p>
+      <dl class="detail-list">
+        <div><dt>ID Registrasi</dt><dd id="sukses-id">-</dd></div>
+        <div><dt>Nama</dt><dd id="sukses-nama">-</dd></div>
+        <div><dt>Perusahaan</dt><dd id="sukses-perusahaan">-</dd></div>
+        <div><dt>Waktu</dt><dd id="sukses-waktu">-</dd></div>
+      </dl>
+      <p class="field-hint">Silakan tunjukkan halaman ini kepada petugas apabila diperlukan.</p>
+    </section>
+  </main>
 
-    var wadah = document.getElementById("hasil");
+  <!-- ===================== LOADING ===================== -->
+  <div class="loading" id="loading" role="status" aria-live="polite" hidden>
+    <div class="spinner"></div>
+    <p>Mengirim registrasi...</p>
+  </div>
 
-    function tambahBaris(label, nilai, kelas) {
-      var baris = document.createElement("div");
-      baris.className = "row";
-      var kiri = document.createElement("span");
-      kiri.textContent = label;
-      var kanan = document.createElement("span");
-      kanan.className = kelas;
-      kanan.textContent = nilai;
-      baris.appendChild(kiri);
-      baris.appendChild(kanan);
-      wadah.appendChild(baris);
-    }
+  <footer class="app-footer">Vendor Management &middot; Visitor Check-in</footer>
 
-    daftarCek.forEach(function (item) {
-      tambahBaris(item[0], item[1] ? "Tersedia" : "Tidak tersedia", item[1] ? "ok" : "no");
-    });
-
-    var waktuWIB = new Intl.DateTimeFormat("id-ID", {
-      timeZone: "Asia/Jakarta",
-      dateStyle: "long",
-      timeStyle: "medium"
-    }).format(new Date());
-    tambahBaris("Waktu perangkat (WIB)", waktuWIB, "info");
-
-    document.getElementById("perangkat").textContent = "Perangkat: " + navigator.userAgent;
-  </script>
+  <script src="/assets/js/app.js" defer></script>
 </body>
 </html>
