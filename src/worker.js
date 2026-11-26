@@ -144,7 +144,7 @@ function validasiSubmit(b) {
   if (nama.length < 3 || nama.length > 100 || !POLA_NAMA.test(nama)) {
     return { error: "Nama lengkap tidak valid." };
   }
-  const perusahaan = rapikan(b.perusahaan);
+  const perusahaan = rapikan(b.perusahaan).toUpperCase(); // disimpan dalam huruf kapital
   if (perusahaan.length < 2 || perusahaan.length > 120 || !POLA_PERUSAHAAN.test(perusahaan)) {
     return { error: "Nama perusahaan tidak valid." };
   }
