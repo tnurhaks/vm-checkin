@@ -34,7 +34,7 @@
 
   // ---------- State aplikasi ----------
   var state = {
-    identitas: { nama: "", perusahaan: "", bidangUsaha: "", whatsapp: "", keperluan: "", valid: false },
+    identitas: { nama: "", perusahaan: "", jabatan: "", bidangUsaha: "", whatsapp: "", keperluan: "", valid: false },
     lokasi: null,
     foto: null,
     persetujuan: false,
@@ -55,6 +55,7 @@
 
   // ---------- Dropdown dengan pilihan "Lainnya" (bidang usaha & keperluan) ----------
   var DROPDOWN = {
+    jabatan:     { pilih: $("jabatan"),      isian: $("jabatan-lainnya"), daftar: V.DAFTAR_JABATAN },
     bidangUsaha: { pilih: $("bidang-usaha"), isian: $("bidang-lainnya"), daftar: V.DAFTAR_BIDANG_USAHA },
     keperluan:   { pilih: $("keperluan"),    isian: $("keperluan-lainnya"), daftar: V.DAFTAR_KEPERLUAN }
   };
@@ -81,13 +82,15 @@
   var FIELD = {
     nama:        { input: $("nama"),       wadah: $("field-nama"),         error: $("nama-error"),         cek: V.validasiNama },
     perusahaan:  { input: $("perusahaan"), wadah: $("field-perusahaan"),   error: $("perusahaan-error"),   cek: V.validasiPerusahaan },
+    jabatan:     { input: DROPDOWN.jabatan.pilih, wadah: $("field-jabatan"), error: $("jabatan-error"),
+                   cek: function (nilai) { return V.validasiJabatan(nilai, DROPDOWN.jabatan.isian.value); } },
     bidangUsaha: { input: DROPDOWN.bidangUsaha.pilih, wadah: $("field-bidang-usaha"), error: $("bidang-usaha-error"),
                    cek: function (nilai) { return V.validasiBidangUsaha(nilai, DROPDOWN.bidangUsaha.isian.value); } },
     whatsapp:    { input: $("whatsapp"),   wadah: $("field-whatsapp"),     error: $("whatsapp-error"),     cek: V.validasiWhatsApp },
     keperluan:   { input: DROPDOWN.keperluan.pilih, wadah: $("field-keperluan"), error: $("keperluan-error"),
                    cek: function (nilai) { return V.validasiKeperluan(nilai, DROPDOWN.keperluan.isian.value); } }
   };
-  var URUTAN_FIELD = ["nama", "perusahaan", "bidangUsaha", "whatsapp", "keperluan"];
+  var URUTAN_FIELD = ["nama", "perusahaan", "jabatan", "bidangUsaha", "whatsapp", "keperluan"];
 
   function tampilkanErrorField(key, pesan) {
     var f = FIELD[key];
@@ -280,6 +283,7 @@
       idempotencyKey: state.idempotencyKey,
       nama: state.identitas.nama,
       perusahaan: state.identitas.perusahaan,
+      jabatan: state.identitas.jabatan,
       bidangUsaha: state.identitas.bidangUsaha,
       whatsapp: state.identitas.whatsapp,
       keperluan: state.identitas.keperluan,
@@ -328,6 +332,7 @@
     $("sukses-id").textContent = (hasil && hasil.registrationId) || "-";
     $("sukses-nama").textContent = state.identitas.nama;
     $("sukses-perusahaan").textContent = state.identitas.perusahaan;
+    $("sukses-jabatan").textContent = state.identitas.jabatan;
     $("sukses-bidang-usaha").textContent = state.identitas.bidangUsaha;
     $("sukses-whatsapp").textContent = state.identitas.whatsapp;
     $("sukses-keperluan").textContent = state.identitas.keperluan;
