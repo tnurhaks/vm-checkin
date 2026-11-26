@@ -38,7 +38,8 @@ var HEADER = [
   "Persetujuan Pemrosesan Data",
   "Status Registrasi",
   "Bidang Usaha", // kolom Q  } ditambahkan di akhir agar kolom A-P
-  "Keperluan"     // kolom R  } (dan data lama) tidak bergeser
+  "Keperluan",    // kolom R  } (dan data lama) tidak bergeser
+  "Jabatan"       // kolom S  }
 ];
 var KOLOM_TAMBAHAN_PERTAMA = 17; // Q
 
@@ -69,7 +70,17 @@ var DAFTAR_KEPERLUAN = [
   "Memandu Pengadaan",
   "Mengambil Dokumen Kontrak",
   "Kembalikan Dokumen Kontrak",
-  "Mengantar Bank Garansi"
+  "Mengantar Bank Garansi",
+  "Mengantar Dokumen"
+];
+// Daftar jabatan (sama dengan validation.js dan worker.js).
+var DAFTAR_JABATAN = [
+  "Direktur / Pimpinan",
+  "Manajer",
+  "Staf",
+  "Marketing / Sales",
+  "Teknisi",
+  "Kurir"
 ];
 var AWALAN_LAINNYA = "Lainnya: ";
 
@@ -354,7 +365,8 @@ function prosesSubmit_(d) {
       "Ya (versi " + VERSI_PERSETUJUAN + ")",
       "Berhasil",
       teksAman_(v.data.bidangUsaha),
-      teksAman_(v.data.keperluan)
+      teksAman_(v.data.keperluan),
+      teksAman_(v.data.jabatan)
     ];
     var shRegistrasi = bukaSheet_(SHEET_REGISTRASI);
     pastikanKolomTambahan_(shRegistrasi);
@@ -376,6 +388,8 @@ function validasi_(d) {
   if (perusahaan.length < 2 || perusahaan.length > 120 || !POLA_PERUSAHAAN.test(perusahaan)) {
     return { error: "Nama perusahaan tidak valid." };
   }
+  var jabatan = normalisasiPilihan_(DAFTAR_JABATAN, d.jabatan);
+  if (!jabatan) return { error: "Jabatan tidak valid." };
   var bidangUsaha = normalisasiPilihan_(DAFTAR_BIDANG_USAHA, d.bidangUsaha);
   if (!bidangUsaha) return { error: "Bidang usaha tidak valid." };
   var wa = String(d.whatsapp || "");
@@ -395,6 +409,7 @@ function validasi_(d) {
     data: {
       nama: nama,
       perusahaan: perusahaan,
+      jabatan: jabatan,
       bidangUsaha: bidangUsaha,
       whatsapp: wa,
       keperluan: keperluan,
@@ -515,7 +530,7 @@ function normalisasiPilihan_(daftar, input) {
   return null;
 }
 
-// Menambahkan judul kolom Q dst. ("Bidang Usaha", "Keperluan") pada sheet yang dibuat sebelum kolom ini ada.
+// Menambahkan judul kolom Q dst. ("Bidang Usaha", "Keperluan", "Jabatan") pada sheet yang dibuat sebelum kolom ini ada.
 function pastikanKolomTambahan_(sh) {
   if (!sh || sh.getLastRow() === 0) return;
   var jumlah = HEADER.length - KOLOM_TAMBAHAN_PERTAMA + 1;
