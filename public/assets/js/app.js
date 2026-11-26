@@ -155,6 +155,15 @@
         var bersih = f.input.value.replace(/[^\d+\s\-]/g, "");
         if (bersih !== f.input.value) f.input.value = bersih;
       }
+      if (key === "perusahaan") {
+        // Nama perusahaan otomatis huruf kapital; posisi kursor dipertahankan.
+        var besar = f.input.value.toUpperCase();
+        if (besar !== f.input.value) {
+          var awal = f.input.selectionStart, akhir = f.input.selectionEnd;
+          f.input.value = besar;
+          try { f.input.setSelectionRange(awal, akhir); } catch (e) { /* abaikan */ }
+        }
+      }
       cekField(key, f.wadah.classList.contains("has-error"));
       perbaruiStatus();
     });
@@ -320,6 +329,7 @@
     $("sukses-nama").textContent = state.identitas.nama;
     $("sukses-perusahaan").textContent = state.identitas.perusahaan;
     $("sukses-bidang-usaha").textContent = state.identitas.bidangUsaha;
+    $("sukses-whatsapp").textContent = state.identitas.whatsapp;
     $("sukses-keperluan").textContent = state.identitas.keperluan;
     $("sukses-waktu").textContent = formatTanggal.format(waktu) + ", " + formatWaktu.format(waktu) + " WIB";
     $("halaman-form").hidden = true;

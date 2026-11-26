@@ -38,7 +38,7 @@
   var POLA_PERUSAHAAN = /^[\p{L}\p{N}][\p{L}\p{M}\p{N}\s.,&()'\/\-]*$/u;
 
   function validasiPerusahaan(input) {
-    var nilai = rapikan(input);
+    var nilai = rapikan(input).toUpperCase(); // nama perusahaan disimpan dalam huruf kapital
     if (!nilai) return hasilGagal("Nama perusahaan wajib diisi.");
     if (nilai.length < 2) return hasilGagal("Nama perusahaan minimal 2 karakter.");
     if (nilai.length > 120) return hasilGagal("Nama perusahaan maksimal 120 karakter.");
