@@ -372,7 +372,7 @@ function validasi_(d) {
   if (!POLA_IDEMPOTENCY.test(String(d.idempotencyKey || ""))) return { error: "Data registrasi tidak valid." };
   var nama = rapikan_(d.nama);
   if (nama.length < 3 || nama.length > 100 || !POLA_NAMA.test(nama)) return { error: "Nama lengkap tidak valid." };
-  var perusahaan = rapikan_(d.perusahaan);
+  var perusahaan = rapikan_(d.perusahaan).toUpperCase(); // disimpan dalam huruf kapital
   if (perusahaan.length < 2 || perusahaan.length > 120 || !POLA_PERUSAHAAN.test(perusahaan)) {
     return { error: "Nama perusahaan tidak valid." };
   }
