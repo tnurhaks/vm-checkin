@@ -108,7 +108,7 @@ main.container { margin-top: -40px; padding-bottom: 24px; }
 label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
 .req { color: var(--danger); }
 
-input[type="text"], input[type="tel"] {
+input[type="text"], input[type="tel"], select {
   width: 100%; font: inherit; font-size: 16px; /* 16px mencegah zoom otomatis di iPhone */
   padding: 12px 14px; border: 1.5px solid var(--border); border-radius: var(--radius-sm);
   background: #FFFFFF; color: var(--text);
@@ -117,7 +117,16 @@ input[type="text"], input[type="tel"] {
 }
 input::placeholder { color: #94A3B8; }
 input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12); }
-.field.has-error input { border-color: var(--danger); }
+.field.has-error input, .field.has-error select { border-color: var(--danger); }
+select {
+  padding-right: 40px; cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center; background-size: 18px;
+}
+select:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12); }
+select:invalid { color: #94A3B8; }
+select option { color: var(--text); }
+#bidang-lainnya, #keperluan-lainnya { margin-top: 8px; }
 .field-hint { margin: 6px 0 0; font-size: 12px; color: var(--muted); }
 .field-error { margin: 6px 0 0; font-size: 12px; color: var(--danger); font-weight: 500; }
 
