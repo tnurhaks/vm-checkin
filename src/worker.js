@@ -146,33 +146,33 @@ function normalisasiPilihan(daftar, input) {
 }
 
 function validasiSubmit(b) {
-  if (!b || typeof b !== "object") return { error: "Data registrasi tidak valid." };
+  if (!b || typeof b !== "object") return { error: "Data registrasi tidak valid" };
 
-  if (!POLA_IDEMPOTENCY.test(String(b.idempotencyKey || ""))) return { error: "Data registrasi tidak valid." };
+  if (!POLA_IDEMPOTENCY.test(String(b.idempotencyKey || ""))) return { error: "Data registrasi tidak valid" };
 
   const nama = rapikan(b.nama);
   if (nama.length < 3 || nama.length > 100 || !POLA_NAMA.test(nama)) {
-    return { error: "Nama lengkap tidak valid." };
+    return { error: "Nama lengkap tidak valid" };
   }
   const perusahaan = rapikan(b.perusahaan).toUpperCase(); // disimpan dalam huruf kapital
   if (perusahaan.length < 2 || perusahaan.length > 120 || !POLA_PERUSAHAAN.test(perusahaan)) {
-    return { error: "Nama perusahaan tidak valid." };
+    return { error: "Nama perusahaan tidak valid" };
   }
   const jabatan = normalisasiPilihan(DAFTAR_JABATAN, b.jabatan);
-  if (!jabatan) return { error: "Jabatan tidak valid. Muat ulang halaman, lalu pilih kembali." };
+  if (!jabatan) return { error: "Jabatan tidak valid. Muat ulang halaman, lalu pilih kembali" };
   const bidangUsaha = normalisasiPilihan(DAFTAR_BIDANG_USAHA, b.bidangUsaha);
-  if (!bidangUsaha) return { error: "Bidang usaha tidak valid. Muat ulang halaman, lalu pilih kembali." };
+  if (!bidangUsaha) return { error: "Bidang usaha tidak valid. Muat ulang halaman, lalu pilih kembali" };
   const whatsapp = normalisasiWhatsApp(b.whatsapp);
-  if (!whatsapp) return { error: "Nomor WhatsApp tidak valid." };
+  if (!whatsapp) return { error: "Nomor WhatsApp tidak valid" };
   const keperluan = normalisasiPilihan(DAFTAR_KEPERLUAN, b.keperluan);
-  if (!keperluan) return { error: "Keperluan tidak valid. Muat ulang halaman, lalu pilih kembali." };
+  if (!keperluan) return { error: "Keperluan tidak valid. Muat ulang halaman, lalu pilih kembali" };
 
-  if (!waktuWajar(b.waktuMulaiIsi)) return { error: "Waktu pengisian tidak valid. Muat ulang halaman, lalu coba kembali." };
+  if (!waktuWajar(b.waktuMulaiIsi)) return { error: "Waktu pengisian tidak valid. Muat ulang halaman, lalu coba kembali" };
 
   const l = b.lokasi || {};
   if (!angkaDalamRentang(l.latitude, -90, 90) || !angkaDalamRentang(l.longitude, -180, 180) ||
       !angkaDalamRentang(l.akurasi, 0, 100000)) {
-    return { error: "Data lokasi tidak valid. Aktifkan ulang lokasi Anda." };
+    return { error: "Data lokasi tidak valid. Aktifkan ulang lokasi Anda" };
   }
   const alamat = l.alamat ? rapikan(l.alamat).slice(0, 300) : null;
   const waktuLokasi = waktuWajar(l.waktuLokasi) ? l.waktuLokasi : null;
@@ -180,9 +180,9 @@ function validasiSubmit(b) {
   const f = b.foto || {};
   if (typeof f.base64 !== "string" || f.base64.length < 1000 || f.base64.length > BATAS_FOTO_BASE64 ||
       !f.base64.startsWith("/9j/")) { // tanda awal file JPEG dalam base64
-    return { error: "Foto tidak valid. Silakan ambil ulang foto." };
+    return { error: "Foto tidak valid. Silakan ambil ulang foto" };
   }
-  if (!waktuWajar(f.waktuFoto)) return { error: "Waktu foto tidak valid. Silakan ambil ulang foto." };
+  if (!waktuWajar(f.waktuFoto)) return { error: "Waktu foto tidak valid. Silakan ambil ulang foto" };
 
   return {
     data: {
@@ -279,16 +279,16 @@ function handleConfig(env) {
 }
 
 async function handleGeocode(request, env, url) {
-  if (!originSah(request, url)) return gagal(403, "Permintaan tidak diizinkan.", "FORBIDDEN");
+  if (!originSah(request, url)) return gagal(403, "Permintaan tidak diizinkan", "FORBIDDEN");
   const ip = ipKlien(request);
   if (lewatBatas("geo:" + ip, 30, 10 * 60 * 1000)) return json({ ok: true, alamat: null });
 
   const { data, terlaluBesar } = await bacaJson(request, 2000);
-  if (terlaluBesar || !data) return gagal(400, "Data tidak valid.", "VALIDATION");
+  if (terlaluBesar || !data) return gagal(400, "Data tidak valid", "VALIDATION");
   const lat = data.latitude;
   const lng = data.longitude;
   if (!angkaDalamRentang(lat, -90, 90) || !angkaDalamRentang(lng, -180, 180)) {
-    return gagal(400, "Koordinat tidak valid.", "VALIDATION");
+    return gagal(400, "Koordinat tidak valid", "VALIDATION");
   }
   if (!backendTerkonfigurasi(env)) return json({ ok: true, alamat: null });
 
@@ -303,26 +303,26 @@ async function handleGeocode(request, env, url) {
 }
 
 async function handleSubmit(request, env, url) {
-  if (!originSah(request, url)) return gagal(403, "Permintaan tidak diizinkan.", "FORBIDDEN");
+  if (!originSah(request, url)) return gagal(403, "Permintaan tidak diizinkan", "FORBIDDEN");
   if (!backendTerkonfigurasi(env)) {
-    return gagal(503, "Layanan registrasi belum siap. Silakan hubungi petugas.", "NOT_CONFIGURED");
+    return gagal(503, "Layanan registrasi belum siap. Silakan hubungi petugas", "NOT_CONFIGURED");
   }
 
   const ip = ipKlien(request);
   if (lewatBatas("submit:" + ip, 10, 10 * 60 * 1000)) {
-    return gagal(429, "Terlalu banyak percobaan. Silakan tunggu beberapa menit, lalu coba kembali.", "RATE_LIMIT");
+    return gagal(429, "Terlalu banyak percobaan. Silakan tunggu beberapa menit, lalu coba kembali", "RATE_LIMIT");
   }
 
   const { data, terlaluBesar } = await bacaJson(request, BATAS_BODY_SUBMIT);
-  if (terlaluBesar) return gagal(413, "Ukuran foto terlalu besar. Silakan ambil ulang foto.", "TOO_LARGE");
-  if (!data) return gagal(400, "Data registrasi tidak valid.", "VALIDATION");
+  if (terlaluBesar) return gagal(413, "Ukuran foto terlalu besar. Silakan ambil ulang foto", "TOO_LARGE");
+  if (!data) return gagal(400, "Data registrasi tidak valid", "VALIDATION");
 
   const hasilValidasi = validasiSubmit(data);
   if (hasilValidasi.error) return gagal(400, hasilValidasi.error, "VALIDATION");
 
   const lolosTurnstile = await verifikasiTurnstile(env, data.turnstileToken, ip);
   if (!lolosTurnstile) {
-    return gagal(403, "Verifikasi keamanan gagal. Silakan tunggu verifikasi selesai, lalu kirim kembali.", "TURNSTILE");
+    return gagal(403, "Verifikasi keamanan gagal. Silakan tunggu verifikasi selesai, lalu kirim kembali", "TURNSTILE");
   }
 
   const ipHash = (await sha256Hex(ip + "|" + env.GAS_SECRET)).slice(0, 24);
@@ -332,7 +332,7 @@ async function handleSubmit(request, env, url) {
     hasil = await panggilGAS(env, "submit", { ...hasilValidasi.data, ipHash });
   } catch (e) {
     console.error("submit ke Apps Script gagal:", e.message);
-    return gagal(502, "Server penyimpanan sedang tidak dapat dihubungi. Silakan coba kembali.", "UPSTREAM");
+    return gagal(502, "Server penyimpanan sedang tidak dapat dihubungi. Silakan coba kembali", "UPSTREAM");
   }
 
   if (hasil && hasil.ok) {
@@ -342,8 +342,8 @@ async function handleSubmit(request, env, url) {
   const peta = { VALIDATION: 400, RATE_LIMIT: 429, UNAUTHORIZED: 502, SERVICE_OFF: 503 };
   const status = peta[hasil && hasil.code] || 500;
   const pesan = (hasil && hasil.code !== "UNAUTHORIZED" && hasil.message) ||
-    "Registrasi gagal diproses. Silakan coba kembali.";
-  if (hasil && hasil.code === "UNAUTHORIZED") console.error("GAS menolak signature: periksa GAS_SECRET.");
+    "Registrasi gagal diproses. Silakan coba kembali";
+  if (hasil && hasil.code === "UNAUTHORIZED") console.error("GAS menolak signature: periksa GAS_SECRET");
   return gagal(status, pesan, (hasil && hasil.code) || "ERROR");
 }
 
@@ -358,10 +358,10 @@ export default {
       if (url.pathname === "/api/config" && request.method === "GET") return handleConfig(env);
       if (url.pathname === "/api/geocode" && request.method === "POST") return await handleGeocode(request, env, url);
       if (url.pathname === "/api/submit" && request.method === "POST") return await handleSubmit(request, env, url);
-      return gagal(404, "Endpoint tidak ditemukan.", "NOT_FOUND");
+      return gagal(404, "Endpoint tidak ditemukan", "NOT_FOUND");
     } catch (e) {
       console.error("Kesalahan tak terduga:", e && e.message);
-      return gagal(500, "Terjadi kendala pada server. Silakan coba kembali.", "SERVER_ERROR");
+      return gagal(500, "Terjadi kendala pada server. Silakan coba kembali", "SERVER_ERROR");
     }
   }
 };
