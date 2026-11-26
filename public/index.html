@@ -77,12 +77,30 @@
           <p class="field-error" id="perusahaan-error" hidden></p>
         </div>
 
+        <div class="field" id="field-bidang-usaha">
+          <label for="bidang-usaha">Bidang usaha <span class="req">*</span></label>
+          <select id="bidang-usaha" name="bidang-usaha" required>
+            <option value="" selected disabled>Pilih bidang usaha</option>
+          </select>
+          <input id="bidang-lainnya" name="bidang-lainnya" type="text" maxlength="80" placeholder="Sebutkan bidang usaha Anda" aria-label="Bidang usaha lainnya" hidden>
+          <p class="field-error" id="bidang-usaha-error" hidden></p>
+        </div>
+
         <div class="field" id="field-whatsapp">
           <label for="whatsapp">Nomor WhatsApp <span class="req">*</span></label>
           <input id="whatsapp" name="whatsapp" type="tel" inputmode="tel" autocomplete="tel" maxlength="18" placeholder="Contoh: 0812 3456 7890" required>
           <p class="field-hint">Dapat diawali 08, 62, atau +62.</p>
           <p class="field-hint" id="whatsapp-normal" hidden></p>
           <p class="field-error" id="whatsapp-error" hidden></p>
+        </div>
+
+        <div class="field" id="field-keperluan">
+          <label for="keperluan">Keperluan <span class="req">*</span></label>
+          <select id="keperluan" name="keperluan" required>
+            <option value="" selected disabled>Pilih keperluan kunjungan</option>
+          </select>
+          <input id="keperluan-lainnya" name="keperluan-lainnya" type="text" maxlength="80" placeholder="Sebutkan keperluan Anda" aria-label="Keperluan lainnya" hidden>
+          <p class="field-error" id="keperluan-error" hidden></p>
         </div>
       </section>
 
@@ -183,6 +201,8 @@
         <div><dt>ID Registrasi</dt><dd id="sukses-id">-</dd></div>
         <div><dt>Nama</dt><dd id="sukses-nama">-</dd></div>
         <div><dt>Perusahaan</dt><dd id="sukses-perusahaan">-</dd></div>
+        <div><dt>Bidang Usaha</dt><dd id="sukses-bidang-usaha">-</dd></div>
+        <div><dt>Keperluan</dt><dd id="sukses-keperluan">-</dd></div>
         <div><dt>Waktu</dt><dd id="sukses-waktu">-</dd></div>
       </dl>
       <p class="field-hint">Silakan tunjukkan halaman ini kepada petugas apabila diperlukan.</p>
