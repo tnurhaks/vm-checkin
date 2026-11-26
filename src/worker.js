@@ -45,7 +45,17 @@ const DAFTAR_KEPERLUAN = [
   "Memandu Pengadaan",
   "Mengambil Dokumen Kontrak",
   "Kembalikan Dokumen Kontrak",
-  "Mengantar Bank Garansi"
+  "Mengantar Bank Garansi",
+  "Mengantar Dokumen"
+];
+// Daftar jabatan (sama dengan validation.js dan Code.gs).
+const DAFTAR_JABATAN = [
+  "Direktur / Pimpinan",
+  "Manajer",
+  "Staf",
+  "Marketing / Sales",
+  "Teknisi",
+  "Kurir"
 ];
 const AWALAN_LAINNYA = "Lainnya: ";
 
@@ -148,6 +158,8 @@ function validasiSubmit(b) {
   if (perusahaan.length < 2 || perusahaan.length > 120 || !POLA_PERUSAHAAN.test(perusahaan)) {
     return { error: "Nama perusahaan tidak valid." };
   }
+  const jabatan = normalisasiPilihan(DAFTAR_JABATAN, b.jabatan);
+  if (!jabatan) return { error: "Jabatan tidak valid. Muat ulang halaman, lalu pilih kembali." };
   const bidangUsaha = normalisasiPilihan(DAFTAR_BIDANG_USAHA, b.bidangUsaha);
   if (!bidangUsaha) return { error: "Bidang usaha tidak valid. Muat ulang halaman, lalu pilih kembali." };
   const whatsapp = normalisasiWhatsApp(b.whatsapp);
@@ -178,6 +190,7 @@ function validasiSubmit(b) {
       idempotencyKey: b.idempotencyKey,
       nama,
       perusahaan,
+      jabatan,
       bidangUsaha,
       whatsapp,
       keperluan,
