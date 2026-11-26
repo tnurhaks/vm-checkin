@@ -77,6 +77,15 @@
           <p class="field-error" id="perusahaan-error" hidden></p>
         </div>
 
+        <div class="field" id="field-jabatan">
+          <label for="jabatan">Jabatan <span class="req">*</span></label>
+          <select id="jabatan" name="jabatan" required>
+            <option value="" selected disabled>Pilih jabatan</option>
+          </select>
+          <input id="jabatan-lainnya" name="jabatan-lainnya" type="text" maxlength="80" placeholder="Sebutkan jabatan Anda" aria-label="Jabatan lainnya" hidden>
+          <p class="field-error" id="jabatan-error" hidden></p>
+        </div>
+
         <div class="field" id="field-bidang-usaha">
           <label for="bidang-usaha">Bidang usaha <span class="req">*</span></label>
           <select id="bidang-usaha" name="bidang-usaha" required>
@@ -201,6 +210,7 @@
         <div><dt>ID Registrasi</dt><dd id="sukses-id">-</dd></div>
         <div><dt>Nama</dt><dd id="sukses-nama">-</dd></div>
         <div><dt>Perusahaan</dt><dd id="sukses-perusahaan">-</dd></div>
+        <div><dt>Jabatan</dt><dd id="sukses-jabatan">-</dd></div>
         <div><dt>Bidang Usaha</dt><dd id="sukses-bidang-usaha">-</dd></div>
         <div><dt>Nomor WhatsApp</dt><dd id="sukses-whatsapp">-</dd></div>
         <div><dt>Keperluan</dt><dd id="sukses-keperluan">-</dd></div>
