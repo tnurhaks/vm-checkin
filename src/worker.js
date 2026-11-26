@@ -18,6 +18,37 @@ const POLA_NAMA = /^\p{L}[\p{L}\p{M}\s.,'\-]*$/u;
 const POLA_PERUSAHAAN = /^[\p{L}\p{N}][\p{L}\p{M}\p{N}\s.,&()'\/\-]*$/u;
 const POLA_IDEMPOTENCY = /^[A-Za-z0-9-]{16,64}$/;
 
+// Daftar bidang usaha (sama dengan public/assets/js/validation.js dan apps-script/Code.gs).
+const DAFTAR_BIDANG_USAHA = [
+  "Konstruksi & Renovasi Gedung",
+  "Konsultan (Perencana / Pengawas / Manajemen Konstruksi)",
+  "Mekanikal, Elektrikal & Plumbing (MEP)",
+  "Pemeliharaan Gedung & Fasilitas",
+  "Kebersihan (Cleaning Service)",
+  "Keamanan (Security / Satpam)",
+  "Teknologi Informasi (Hardware, Software, Jaringan)",
+  "Telekomunikasi",
+  "Alat Tulis Kantor, Perlengkapan & Furnitur",
+  "Kendaraan & Transportasi",
+  "Katering & Konsumsi",
+  "Event Organizer, Percetakan & Media",
+  "Peralatan Pengelolaan Uang (mesin hitung, sortir, khazanah)",
+  "Asuransi & Jasa Keuangan",
+  "Akomodasi (Hotel / Travel Agent)"
+];
+// Daftar keperluan kunjungan (sama dengan validation.js dan Code.gs).
+const DAFTAR_KEPERLUAN = [
+  "Pendaftaran Rekanan",
+  "Verifikasi Dokumen",
+  "Penambahan Akun Baru",
+  "Tidak Bisa Login",
+  "Memandu Pengadaan",
+  "Mengambil Dokumen Kontrak",
+  "Kembalikan Dokumen Kontrak",
+  "Mengantar Bank Garansi"
+];
+const AWALAN_LAINNYA = "Lainnya: ";
+
 // ---------- Utilitas respons ----------
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -93,6 +124,17 @@ function angkaDalamRentang(n, min, max) {
   return typeof n === "number" && Number.isFinite(n) && n >= min && n <= max;
 }
 
+// Nilai sah: salah satu isi daftar, atau "Lainnya: <isian 2-80 karakter>".
+function normalisasiPilihan(daftar, input) {
+  const s = rapikan(input);
+  if (daftar.includes(s)) return s;
+  if (s.startsWith(AWALAN_LAINNYA)) {
+    const isi = s.slice(AWALAN_LAINNYA.length).trim();
+    if (isi.length >= 2 && isi.length <= 80 && POLA_PERUSAHAAN.test(isi)) return AWALAN_LAINNYA + isi;
+  }
+  return null;
+}
+
 function validasiSubmit(b) {
   if (!b || typeof b !== "object") return { error: "Data registrasi tidak valid." };
 
@@ -106,8 +148,12 @@ function validasiSubmit(b) {
   if (perusahaan.length < 2 || perusahaan.length > 120 || !POLA_PERUSAHAAN.test(perusahaan)) {
     return { error: "Nama perusahaan tidak valid." };
   }
+  const bidangUsaha = normalisasiPilihan(DAFTAR_BIDANG_USAHA, b.bidangUsaha);
+  if (!bidangUsaha) return { error: "Bidang usaha tidak valid. Muat ulang halaman, lalu pilih kembali." };
   const whatsapp = normalisasiWhatsApp(b.whatsapp);
   if (!whatsapp) return { error: "Nomor WhatsApp tidak valid." };
+  const keperluan = normalisasiPilihan(DAFTAR_KEPERLUAN, b.keperluan);
+  if (!keperluan) return { error: "Keperluan tidak valid. Muat ulang halaman, lalu pilih kembali." };
 
   if (b.persetujuan !== true) return { error: "Persetujuan pemrosesan data wajib diberikan." };
   if (!waktuWajar(b.waktuMulaiIsi)) return { error: "Waktu pengisian tidak valid. Muat ulang halaman, lalu coba kembali." };
@@ -132,7 +178,9 @@ function validasiSubmit(b) {
       idempotencyKey: b.idempotencyKey,
       nama,
       perusahaan,
+      bidangUsaha,
       whatsapp,
+      keperluan,
       waktuMulaiIsi: b.waktuMulaiIsi,
       persetujuan: true,
       versiPersetujuan: VERSI_PERSETUJUAN,

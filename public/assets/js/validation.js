@@ -72,11 +72,71 @@
     return hasilOk(nilai);
   }
 
+  // ---------- Pilihan dropdown (daftar tetap + "Lainnya") ----------
+  // Daftar yang sama ada di src/worker.js dan apps-script/Code.gs.
+  var DAFTAR_BIDANG_USAHA = [
+    "Konstruksi & Renovasi Gedung",
+    "Konsultan (Perencana / Pengawas / Manajemen Konstruksi)",
+    "Mekanikal, Elektrikal & Plumbing (MEP)",
+    "Pemeliharaan Gedung & Fasilitas",
+    "Kebersihan (Cleaning Service)",
+    "Keamanan (Security / Satpam)",
+    "Teknologi Informasi (Hardware, Software, Jaringan)",
+    "Telekomunikasi",
+    "Alat Tulis Kantor, Perlengkapan & Furnitur",
+    "Kendaraan & Transportasi",
+    "Katering & Konsumsi",
+    "Event Organizer, Percetakan & Media",
+    "Peralatan Pengelolaan Uang (mesin hitung, sortir, khazanah)",
+    "Asuransi & Jasa Keuangan",
+    "Akomodasi (Hotel / Travel Agent)"
+  ];
+  var DAFTAR_KEPERLUAN = [
+    "Pendaftaran Rekanan",
+    "Verifikasi Dokumen",
+    "Penambahan Akun Baru",
+    "Tidak Bisa Login",
+    "Memandu Pengadaan",
+    "Mengambil Dokumen Kontrak",
+    "Kembalikan Dokumen Kontrak",
+    "Mengantar Bank Garansi"
+  ];
+  var PILIHAN_LAINNYA = "Lainnya";
+
+  // Mengembalikan nilai yang disimpan: isi daftar, atau "Lainnya: <isian>".
+  function validasiPilihan(daftar, label, pilihan, isianLainnya) {
+    var p = String(pilihan || "");
+    if (!p) return hasilGagal(label + " wajib dipilih.");
+    if (p === PILIHAN_LAINNYA) {
+      var isi = rapikan(isianLainnya);
+      if (!isi) return hasilGagal("Sebutkan " + label.toLowerCase() + " Anda.");
+      if (isi.length < 2) return hasilGagal(label + " minimal 2 karakter.");
+      if (isi.length > 80) return hasilGagal(label + " maksimal 80 karakter.");
+      if (!POLA_PERUSAHAAN.test(isi)) return hasilGagal(label + " mengandung karakter yang tidak diperbolehkan.");
+      return hasilOk(PILIHAN_LAINNYA + ": " + isi);
+    }
+    if (daftar.indexOf(p) === -1) return hasilGagal(label + " tidak valid.");
+    return hasilOk(p);
+  }
+
+  function validasiBidangUsaha(pilihan, isianLainnya) {
+    return validasiPilihan(DAFTAR_BIDANG_USAHA, "Bidang usaha", pilihan, isianLainnya);
+  }
+
+  function validasiKeperluan(pilihan, isianLainnya) {
+    return validasiPilihan(DAFTAR_KEPERLUAN, "Keperluan", pilihan, isianLainnya);
+  }
+
   window.VMValidasi = {
     rapikan: rapikan,
     validasiNama: validasiNama,
     validasiPerusahaan: validasiPerusahaan,
     validasiWhatsApp: validasiWhatsApp,
-    normalisasiWhatsApp: normalisasiWhatsApp
+    normalisasiWhatsApp: normalisasiWhatsApp,
+    validasiBidangUsaha: validasiBidangUsaha,
+    validasiKeperluan: validasiKeperluan,
+    DAFTAR_BIDANG_USAHA: DAFTAR_BIDANG_USAHA,
+    DAFTAR_KEPERLUAN: DAFTAR_KEPERLUAN,
+    PILIHAN_LAINNYA: PILIHAN_LAINNYA
   };
 })();

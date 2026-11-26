@@ -36,8 +36,42 @@ var HEADER = [
   "Google Maps URL",
   "Google Drive Photo URL",
   "Persetujuan Pemrosesan Data",
-  "Status Registrasi"
+  "Status Registrasi",
+  "Bidang Usaha", // kolom Q  } ditambahkan di akhir agar kolom A-P
+  "Keperluan"     // kolom R  } (dan data lama) tidak bergeser
 ];
+var KOLOM_TAMBAHAN_PERTAMA = 17; // Q
+
+// Daftar bidang usaha (sama dengan public/assets/js/validation.js dan src/worker.js).
+var DAFTAR_BIDANG_USAHA = [
+  "Konstruksi & Renovasi Gedung",
+  "Konsultan (Perencana / Pengawas / Manajemen Konstruksi)",
+  "Mekanikal, Elektrikal & Plumbing (MEP)",
+  "Pemeliharaan Gedung & Fasilitas",
+  "Kebersihan (Cleaning Service)",
+  "Keamanan (Security / Satpam)",
+  "Teknologi Informasi (Hardware, Software, Jaringan)",
+  "Telekomunikasi",
+  "Alat Tulis Kantor, Perlengkapan & Furnitur",
+  "Kendaraan & Transportasi",
+  "Katering & Konsumsi",
+  "Event Organizer, Percetakan & Media",
+  "Peralatan Pengelolaan Uang (mesin hitung, sortir, khazanah)",
+  "Asuransi & Jasa Keuangan",
+  "Akomodasi (Hotel / Travel Agent)"
+];
+// Daftar keperluan kunjungan (sama dengan validation.js dan worker.js).
+var DAFTAR_KEPERLUAN = [
+  "Pendaftaran Rekanan",
+  "Verifikasi Dokumen",
+  "Penambahan Akun Baru",
+  "Tidak Bisa Login",
+  "Memandu Pengadaan",
+  "Mengambil Dokumen Kontrak",
+  "Kembalikan Dokumen Kontrak",
+  "Mengantar Bank Garansi"
+];
+var AWALAN_LAINNYA = "Lainnya: ";
 
 var BATAS_UMUR_PERMINTAAN_MS = 5 * 60 * 1000; // signature berlaku 5 menit
 var BATAS_FOTO_BYTE = 1.5 * 1024 * 1024;
@@ -90,6 +124,7 @@ function setup() {
     sh.getRange("K2:K").setNumberFormat("0");
     sh.setColumnWidths(1, HEADER.length, 160);
   }
+  pastikanKolomTambahan_(sh);
 
   // Sheet Pengaturan (dapat diubah administrator)
   var shP = ss.getSheetByName(SHEET_PENGATURAN) || ss.insertSheet(SHEET_PENGATURAN);
@@ -317,9 +352,13 @@ function prosesSubmit_(d) {
       mapsUrl,
       file.getUrl(),
       "Ya (versi " + VERSI_PERSETUJUAN + ")",
-      "Berhasil"
+      "Berhasil",
+      teksAman_(v.data.bidangUsaha),
+      teksAman_(v.data.keperluan)
     ];
-    bukaSheet_(SHEET_REGISTRASI).appendRow(baris);
+    var shRegistrasi = bukaSheet_(SHEET_REGISTRASI);
+    pastikanKolomTambahan_(shRegistrasi);
+    shRegistrasi.appendRow(baris);
 
     var hasil = { ok: true, registrationId: id, waktuServer: kini.toISOString() };
     cache.put(kunciIdem, JSON.stringify(hasil), 21600);
@@ -337,8 +376,12 @@ function validasi_(d) {
   if (perusahaan.length < 2 || perusahaan.length > 120 || !POLA_PERUSAHAAN.test(perusahaan)) {
     return { error: "Nama perusahaan tidak valid." };
   }
+  var bidangUsaha = normalisasiPilihan_(DAFTAR_BIDANG_USAHA, d.bidangUsaha);
+  if (!bidangUsaha) return { error: "Bidang usaha tidak valid." };
   var wa = String(d.whatsapp || "");
   if (!/^\+628[1-9]\d{7,10}$/.test(wa)) return { error: "Nomor WhatsApp tidak valid." };
+  var keperluan = normalisasiPilihan_(DAFTAR_KEPERLUAN, d.keperluan);
+  if (!keperluan) return { error: "Keperluan tidak valid." };
   if (d.persetujuan !== true) return { error: "Persetujuan pemrosesan data wajib diberikan." };
 
   var l = d.lokasi || {};
@@ -352,7 +395,9 @@ function validasi_(d) {
     data: {
       nama: nama,
       perusahaan: perusahaan,
+      bidangUsaha: bidangUsaha,
       whatsapp: wa,
+      keperluan: keperluan,
       waktuMulaiIsi: d.waktuMulaiIsi,
       waktuFoto: d.foto.waktuFoto,
       lokasi: {
@@ -457,6 +502,29 @@ function rapikan_(teks) {
     .replace(/[\u0000-\u001F\u007F]/g, "")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+// Nilai sah: salah satu isi daftar, atau "Lainnya: <isian 2-80 karakter>".
+function normalisasiPilihan_(daftar, input) {
+  var s = rapikan_(input);
+  if (daftar.indexOf(s) !== -1) return s;
+  if (s.indexOf(AWALAN_LAINNYA) === 0) {
+    var isi = s.slice(AWALAN_LAINNYA.length).trim();
+    if (isi.length >= 2 && isi.length <= 80 && POLA_PERUSAHAAN.test(isi)) return AWALAN_LAINNYA + isi;
+  }
+  return null;
+}
+
+// Menambahkan judul kolom Q dst. ("Bidang Usaha", "Keperluan") pada sheet yang dibuat sebelum kolom ini ada.
+function pastikanKolomTambahan_(sh) {
+  if (!sh || sh.getLastRow() === 0) return;
+  var jumlah = HEADER.length - KOLOM_TAMBAHAN_PERTAMA + 1;
+  var rentang = sh.getRange(1, KOLOM_TAMBAHAN_PERTAMA, 1, jumlah);
+  var harapan = HEADER.slice(KOLOM_TAMBAHAN_PERTAMA - 1);
+  if (rentang.getValues()[0].join("|") === harapan.join("|")) return;
+  rentang.setValues([harapan])
+    .setFontWeight("bold").setBackground("#123354").setFontColor("#FFFFFF").setWrap(true);
+  sh.setColumnWidths(KOLOM_TAMBAHAN_PERTAMA, jumlah, 220);
 }
 
 // Mencegah spreadsheet formula injection.
