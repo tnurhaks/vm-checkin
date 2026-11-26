@@ -14,7 +14,7 @@ var NAMA_SPREADSHEET = "Database Kehadiran Vendor Management";
 var NAMA_FOLDER_UTAMA = "Vendor Management Check-in";
 var NAMA_FOLDER_FOTO = "Photos";
 var ZONA = "Asia/Jakarta";
-var VERSI_PERSETUJUAN = "1.0";
+var VERSI_DISCLAIMER = "2.0"; // 2.0: disclaimer tanpa kotak centang persetujuan
 
 var SHEET_REGISTRASI = "Registrasi";
 var SHEET_PENGATURAN = "Pengaturan";
@@ -362,7 +362,7 @@ function prosesSubmit_(d) {
       teksAman_(l.alamat || "Tidak tersedia (koordinat GPS digunakan)"),
       mapsUrl,
       file.getUrl(),
-      "Ya (versi " + VERSI_PERSETUJUAN + ")",
+      "Disclaimer ditampilkan (versi " + VERSI_DISCLAIMER + ")",
       "Berhasil",
       teksAman_(v.data.bidangUsaha),
       teksAman_(v.data.keperluan),
@@ -396,7 +396,6 @@ function validasi_(d) {
   if (!/^\+628[1-9]\d{7,10}$/.test(wa)) return { error: "Nomor WhatsApp tidak valid." };
   var keperluan = normalisasiPilihan_(DAFTAR_KEPERLUAN, d.keperluan);
   if (!keperluan) return { error: "Keperluan tidak valid." };
-  if (d.persetujuan !== true) return { error: "Persetujuan pemrosesan data wajib diberikan." };
 
   var l = d.lokasi || {};
   var lat = Number(l.latitude), lng = Number(l.longitude), ak = Number(l.akurasi);
