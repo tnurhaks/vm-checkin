@@ -34,7 +34,7 @@
 
   // ---------- State aplikasi ----------
   var state = {
-    identitas: { nama: "", perusahaan: "", whatsapp: "", valid: false },
+    identitas: { nama: "", perusahaan: "", bidangUsaha: "", whatsapp: "", keperluan: "", valid: false },
     lokasi: null,
     foto: null,
     persetujuan: false,
@@ -53,13 +53,41 @@
   perbaruiJam();
   setInterval(perbaruiJam, 1000);
 
+  // ---------- Dropdown dengan pilihan "Lainnya" (bidang usaha & keperluan) ----------
+  var DROPDOWN = {
+    bidangUsaha: { pilih: $("bidang-usaha"), isian: $("bidang-lainnya"), daftar: V.DAFTAR_BIDANG_USAHA },
+    keperluan:   { pilih: $("keperluan"),    isian: $("keperluan-lainnya"), daftar: V.DAFTAR_KEPERLUAN }
+  };
+
+  Object.keys(DROPDOWN).forEach(function (key) {
+    var d = DROPDOWN[key];
+    d.daftar.concat([V.PILIHAN_LAINNYA]).forEach(function (nama) {
+      var opsi = document.createElement("option");
+      opsi.value = nama;
+      opsi.textContent = nama;
+      d.pilih.appendChild(opsi);
+    });
+  });
+
+  function aturIsianLainnya(key) {
+    var d = DROPDOWN[key];
+    var lainnya = d.pilih.value === V.PILIHAN_LAINNYA;
+    d.isian.hidden = !lainnya;
+    d.isian.required = lainnya;
+    if (!lainnya) d.isian.value = "";
+  }
+
   // ---------- Validasi identitas ----------
   var FIELD = {
-    nama:       { input: $("nama"),       wadah: $("field-nama"),       error: $("nama-error"),       cek: V.validasiNama },
-    perusahaan: { input: $("perusahaan"), wadah: $("field-perusahaan"), error: $("perusahaan-error"), cek: V.validasiPerusahaan },
-    whatsapp:   { input: $("whatsapp"),   wadah: $("field-whatsapp"),   error: $("whatsapp-error"),   cek: V.validasiWhatsApp }
+    nama:        { input: $("nama"),       wadah: $("field-nama"),         error: $("nama-error"),         cek: V.validasiNama },
+    perusahaan:  { input: $("perusahaan"), wadah: $("field-perusahaan"),   error: $("perusahaan-error"),   cek: V.validasiPerusahaan },
+    bidangUsaha: { input: DROPDOWN.bidangUsaha.pilih, wadah: $("field-bidang-usaha"), error: $("bidang-usaha-error"),
+                   cek: function (nilai) { return V.validasiBidangUsaha(nilai, DROPDOWN.bidangUsaha.isian.value); } },
+    whatsapp:    { input: $("whatsapp"),   wadah: $("field-whatsapp"),     error: $("whatsapp-error"),     cek: V.validasiWhatsApp },
+    keperluan:   { input: DROPDOWN.keperluan.pilih, wadah: $("field-keperluan"), error: $("keperluan-error"),
+                   cek: function (nilai) { return V.validasiKeperluan(nilai, DROPDOWN.keperluan.isian.value); } }
   };
-  var URUTAN_FIELD = ["nama", "perusahaan", "whatsapp"];
+  var URUTAN_FIELD = ["nama", "perusahaan", "bidangUsaha", "whatsapp", "keperluan"];
 
   function tampilkanErrorField(key, pesan) {
     var f = FIELD[key];
@@ -132,9 +160,33 @@
     });
 
     f.input.addEventListener("blur", function () {
-      if (f.input.value.trim() !== "") cekField(key, true);
+      var menungguIsianLainnya = DROPDOWN[key] && f.input.value === V.PILIHAN_LAINNYA;
+      if (f.input.value.trim() !== "" && !menungguIsianLainnya) cekField(key, true);
       perbaruiStatus();
       periksaKonsistensiFoto();
+    });
+  });
+
+  Object.keys(DROPDOWN).forEach(function (key) {
+    var d = DROPDOWN[key];
+
+    d.pilih.addEventListener("change", function () {
+      if (!state.waktuMulaiIsi) state.waktuMulaiIsi = window.VMApi.sekarang().toISOString();
+      aturIsianLainnya(key);
+      // Pilihan dari daftar langsung dinilai; "Lainnya" baru dinilai setelah isian diketik.
+      cekField(key, d.pilih.value !== V.PILIHAN_LAINNYA);
+      perbaruiStatus();
+      if (d.pilih.value === V.PILIHAN_LAINNYA) d.isian.focus();
+    });
+
+    d.isian.addEventListener("input", function () {
+      cekField(key, FIELD[key].wadah.classList.contains("has-error"));
+      perbaruiStatus();
+    });
+
+    d.isian.addEventListener("blur", function () {
+      cekField(key, true);
+      perbaruiStatus();
     });
   });
 
@@ -219,7 +271,9 @@
       idempotencyKey: state.idempotencyKey,
       nama: state.identitas.nama,
       perusahaan: state.identitas.perusahaan,
+      bidangUsaha: state.identitas.bidangUsaha,
       whatsapp: state.identitas.whatsapp,
+      keperluan: state.identitas.keperluan,
       waktuMulaiIsi: state.waktuMulaiIsi || window.VMApi.sekarang().toISOString(),
       persetujuan: state.persetujuan === true,
       versiPersetujuan: VERSI_PERSETUJUAN,
@@ -265,6 +319,8 @@
     $("sukses-id").textContent = (hasil && hasil.registrationId) || "-";
     $("sukses-nama").textContent = state.identitas.nama;
     $("sukses-perusahaan").textContent = state.identitas.perusahaan;
+    $("sukses-bidang-usaha").textContent = state.identitas.bidangUsaha;
+    $("sukses-keperluan").textContent = state.identitas.keperluan;
     $("sukses-waktu").textContent = formatTanggal.format(waktu) + ", " + formatWaktu.format(waktu) + " WIB";
     $("halaman-form").hidden = true;
     $("halaman-sukses").hidden = false;
