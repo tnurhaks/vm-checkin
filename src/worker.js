@@ -12,7 +12,7 @@
 
 const BATAS_BODY_SUBMIT = 2_500_000;   // byte
 const BATAS_FOTO_BASE64 = 2_000_000;   // karakter (±1,5 MB file)
-const VERSI_PERSETUJUAN = "1.0";
+const VERSI_DISCLAIMER = "2.0"; // 2.0: disclaimer tanpa kotak centang persetujuan
 
 const POLA_NAMA = /^\p{L}[\p{L}\p{M}\s.,'\-]*$/u;
 const POLA_PERUSAHAAN = /^[\p{L}\p{N}][\p{L}\p{M}\p{N}\s.,&()'\/\-]*$/u;
@@ -167,7 +167,6 @@ function validasiSubmit(b) {
   const keperluan = normalisasiPilihan(DAFTAR_KEPERLUAN, b.keperluan);
   if (!keperluan) return { error: "Keperluan tidak valid. Muat ulang halaman, lalu pilih kembali." };
 
-  if (b.persetujuan !== true) return { error: "Persetujuan pemrosesan data wajib diberikan." };
   if (!waktuWajar(b.waktuMulaiIsi)) return { error: "Waktu pengisian tidak valid. Muat ulang halaman, lalu coba kembali." };
 
   const l = b.lokasi || {};
@@ -195,8 +194,7 @@ function validasiSubmit(b) {
       whatsapp,
       keperluan,
       waktuMulaiIsi: b.waktuMulaiIsi,
-      persetujuan: true,
-      versiPersetujuan: VERSI_PERSETUJUAN,
+      versiDisclaimer: VERSI_DISCLAIMER,
       lokasi: {
         latitude: Number(l.latitude.toFixed(6)),
         longitude: Number(l.longitude.toFixed(6)),
