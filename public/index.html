@@ -45,7 +45,6 @@
       <li class="step is-active" data-step="1"><span class="step-dot">1</span><span class="step-label">Identitas</span></li>
       <li class="step" data-step="2"><span class="step-dot">2</span><span class="step-label">Lokasi</span></li>
       <li class="step" data-step="3"><span class="step-dot">3</span><span class="step-label">Foto</span></li>
-      <li class="step" data-step="4"><span class="step-dot">4</span><span class="step-label">Persetujuan</span></li>
     </ol>
 
     <div class="alert alert-error" id="pesan-error" role="alert" hidden>
@@ -172,22 +171,10 @@
         <p class="field-hint">Foto diambil langsung dari kamera. Foto dari galeri tidak dapat digunakan.</p>
       </section>
 
-      <!-- Kartu 4: Persetujuan -->
-      <section class="card" id="kartu-persetujuan">
-        <div class="card-head">
-          <span class="card-num">4</span>
-          <div>
-            <h2>Persetujuan</h2>
-            <p>Baca dan setujui pemrosesan data pribadi.</p>
-          </div>
-        </div>
-
-        <label class="consent" for="persetujuan">
-          <input type="checkbox" id="persetujuan" name="persetujuan">
-          <span>Saya menyetujui pengumpulan dan pemrosesan data pribadi saya (nama, perusahaan, nomor WhatsApp, lokasi, dan foto) untuk keperluan pencatatan kehadiran tamu Vendor Management, sebagaimana dijelaskan dalam <a href="/privasi" target="_blank" rel="noopener">Pemberitahuan Pemrosesan Data Pribadi</a>.</span>
-        </label>
+      <div class="disclaimer" id="disclaimer">
+        <p>Seluruh informasi yang disampaikan akan diadministrasikan sebagai bagian dari tata kelola dan penguatan layanan Vendor Management Bank Indonesia.</p>
         <div class="turnstile-wadah" id="turnstile-wadah" hidden></div>
-      </section>
+      </div>
 
       <div class="submit-area">
         <button type="submit" class="btn btn-primary btn-block btn-lg" id="btn-submit" disabled>Kirim Registrasi</button>
@@ -224,6 +211,11 @@
   <div class="loading" id="loading" role="status" aria-live="polite" hidden>
     <div class="spinner"></div>
     <p>Mengirim registrasi...</p>
+  </div>
+
+  <div class="banner-vm">
+    <a href="/assets/img/banner-vm.webp" target="_blank" rel="noopener" aria-label="Buka banner ukuran penuh"><img src="/assets/img/banner-vm.webp" width="1400" height="280" loading="lazy" decoding="async"
+         alt="Say NO to Gratifikasi dan Korupsi. Laporkan melalui https://www.bi.go.id/wbsbi/add_wbs2.aspx, telp (021) 2310 689 / (021) 2981 7552, email Helpdesk-Rekanan-BI@bi.go.id, atau Contact Center Bank Indonesia 131 / 1500131, email bicara@bi.go.id."></a>
   </div>
 
   <footer class="app-footer">Vendor Management &middot; Visitor Check-in</footer>
