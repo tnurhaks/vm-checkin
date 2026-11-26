@@ -10,7 +10,7 @@
 
   var V = window.VMValidasi;
   var ZONA_WAKTU = "Asia/Jakarta";
-  var VERSI_PERSETUJUAN = "1.0";
+  var VERSI_DISCLAIMER = "2.0"; // 2.0: disclaimer tanpa kotak centang persetujuan
 
   var formatTanggal = new Intl.DateTimeFormat("id-ID", {
     timeZone: ZONA_WAKTU, day: "2-digit", month: "long", year: "numeric"
@@ -37,7 +37,6 @@
     identitas: { nama: "", perusahaan: "", jabatan: "", bidangUsaha: "", whatsapp: "", keperluan: "", valid: false },
     lokasi: null,
     foto: null,
-    persetujuan: false,
     waktuMulaiIsi: null,
     idempotencyKey: buatIdUnik(), // tetap sama saat kirim ulang, mencegah data ganda
     sedangMengirim: false,
@@ -202,11 +201,6 @@
     });
   });
 
-  $("persetujuan").addEventListener("change", function (e) {
-    state.persetujuan = e.target.checked;
-    perbaruiStatus();
-  });
-
   // ---------- Indikator langkah & tombol Submit ----------
   function perbaruiStatus() {
     cekIdentitas(false);
@@ -214,8 +208,7 @@
     var selesai = {
       "1": state.identitas.valid,
       "2": !!state.lokasi,
-      "3": !!state.foto,
-      "4": state.persetujuan
+      "3": !!state.foto
     };
 
     var aktifSudahDitetapkan = false;
@@ -234,7 +227,6 @@
     $("kartu-identitas").classList.toggle("is-done", selesai["1"]);
     $("kartu-lokasi").classList.toggle("is-done", selesai["2"]);
     $("kartu-foto").classList.toggle("is-done", selesai["3"]);
-    $("kartu-persetujuan").classList.toggle("is-done", selesai["4"]);
 
     if (window.VMKamera) window.VMKamera.setSiap(selesai["1"] && selesai["2"]);
 
@@ -242,7 +234,6 @@
     if (!selesai["1"]) kurang.push("Identitas");
     if (!selesai["2"]) kurang.push("Lokasi");
     if (!selesai["3"]) kurang.push("Foto");
-    if (!selesai["4"]) kurang.push("Persetujuan");
 
     var menungguVerifikasi = window.VMApi.perluVerifikasi() && !window.VMApi.tokenTersedia();
     var layananSiap = window.VMApi.backendSiap();
@@ -288,8 +279,8 @@
       whatsapp: state.identitas.whatsapp,
       keperluan: state.identitas.keperluan,
       waktuMulaiIsi: state.waktuMulaiIsi || window.VMApi.sekarang().toISOString(),
-      persetujuan: state.persetujuan === true,
-      versiPersetujuan: VERSI_PERSETUJUAN,
+      disclaimer: true,
+      versiDisclaimer: VERSI_DISCLAIMER,
       lokasi: {
         latitude: state.lokasi.latitude,
         longitude: state.lokasi.longitude,
