@@ -99,7 +99,16 @@
     "Memandu Pengadaan",
     "Mengambil Dokumen Kontrak",
     "Kembalikan Dokumen Kontrak",
-    "Mengantar Bank Garansi"
+    "Mengantar Bank Garansi",
+    "Mengantar Dokumen"
+  ];
+  var DAFTAR_JABATAN = [
+    "Direktur / Pimpinan",
+    "Manajer",
+    "Staf",
+    "Marketing / Sales",
+    "Teknisi",
+    "Kurir"
   ];
   var PILIHAN_LAINNYA = "Lainnya";
 
@@ -123,6 +132,10 @@
     return validasiPilihan(DAFTAR_BIDANG_USAHA, "Bidang usaha", pilihan, isianLainnya);
   }
 
+  function validasiJabatan(pilihan, isianLainnya) {
+    return validasiPilihan(DAFTAR_JABATAN, "Jabatan", pilihan, isianLainnya);
+  }
+
   function validasiKeperluan(pilihan, isianLainnya) {
     return validasiPilihan(DAFTAR_KEPERLUAN, "Keperluan", pilihan, isianLainnya);
   }
@@ -135,6 +148,8 @@
     normalisasiWhatsApp: normalisasiWhatsApp,
     validasiBidangUsaha: validasiBidangUsaha,
     validasiKeperluan: validasiKeperluan,
+    validasiJabatan: validasiJabatan,
+    DAFTAR_JABATAN: DAFTAR_JABATAN,
     DAFTAR_BIDANG_USAHA: DAFTAR_BIDANG_USAHA,
     DAFTAR_KEPERLUAN: DAFTAR_KEPERLUAN,
     PILIHAN_LAINNYA: PILIHAN_LAINNYA
