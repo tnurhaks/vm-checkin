@@ -67,9 +67,9 @@
     banner.id = "pesan-layanan";
     banner.setAttribute("role", "alert");
     var judul = document.createElement("strong");
-    judul.textContent = "Layanan registrasi belum siap.";
+    judul.textContent = "Layanan registrasi belum siap";
     var isi = document.createElement("span");
-    isi.textContent = "Registrasi belum dapat dikirim saat ini. Silakan hubungi petugas Vendor Management.";
+    isi.textContent = "Registrasi belum dapat dikirim saat ini. Silakan hubungi petugas Vendor Management";
     banner.appendChild(judul);
     banner.appendChild(isi);
     acuan.parentNode.insertBefore(banner, acuan);
@@ -128,15 +128,15 @@
         if (h.data && h.data.ok) {
           return { registrationId: h.data.registrationId, waktuServer: h.data.waktuServer };
         }
-        throw { pesan: (h.data && h.data.message) || "Registrasi gagal diproses. Silakan coba kembali." };
+        throw { pesan: (h.data && h.data.message) || "Registrasi gagal diproses. Silakan coba kembali" };
       })
       .catch(function (err) {
         resetTurnstile(); // token Turnstile hanya berlaku sekali
         if (err && err.pesan) throw err;
         if (err && err.name === "AbortError") {
-          throw { pesan: "Koneksi terlalu lama. Periksa jaringan Anda, lalu coba kembali." };
+          throw { pesan: "Koneksi terlalu lama. Periksa jaringan Anda, lalu coba kembali" };
         }
-        throw { pesan: "Tidak dapat terhubung ke server. Periksa koneksi internet Anda, lalu coba kembali." };
+        throw { pesan: "Tidak dapat terhubung ke server. Periksa koneksi internet Anda, lalu coba kembali" };
       });
   }
 
