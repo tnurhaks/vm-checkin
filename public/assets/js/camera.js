@@ -26,7 +26,7 @@
   var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
     (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 
-  var PESAN_BELUM_SIAP = "Lengkapi identitas dan aktifkan lokasi terlebih dahulu agar data tersebut tercantum pada foto.";
+  var PESAN_BELUM_SIAP = "Lengkapi identitas dan aktifkan lokasi terlebih dahulu agar data tersebut tercantum pada foto";
 
   var stream = null;
   var arahKamera = "user"; // "user" = depan, "environment" = belakang
@@ -74,9 +74,9 @@
 
   function panduanIzinKamera() {
     if (isIOS) {
-      return "Akses kamera ditolak. Di iPhone: buka Pengaturan, pilih Safari, lalu Kamera, dan ubah menjadi Izinkan. Setelah itu muat ulang halaman ini.";
+      return "Akses kamera ditolak. Di iPhone: buka Pengaturan, pilih Safari, lalu Kamera, dan ubah menjadi Izinkan. Setelah itu muat ulang halaman ini";
     }
-    return "Akses kamera ditolak. Di Chrome: ketuk ikon di sebelah kiri alamat situs, pilih Izin, lalu ubah Kamera menjadi Izinkan. Setelah itu muat ulang halaman ini.";
+    return "Akses kamera ditolak. Di Chrome: ketuk ikon di sebelah kiri alamat situs, pilih Izin, lalu ubah Kamera menjadi Izinkan. Setelah itu muat ulang halaman ini";
   }
 
   function tampilkanErrorKamera(err) {
@@ -85,11 +85,11 @@
     if (nama === "NotAllowedError" || nama === "SecurityError" || nama === "PermissionDeniedError") {
       pesan = panduanIzinKamera();
     } else if (nama === "NotFoundError" || nama === "DevicesNotFoundError") {
-      pesan = "Kamera tidak ditemukan pada perangkat ini.";
+      pesan = "Kamera tidak ditemukan pada perangkat ini";
     } else if (nama === "NotReadableError" || nama === "TrackStartError" || nama === "AbortError") {
-      pesan = "Kamera sedang digunakan aplikasi lain. Tutup aplikasi tersebut, lalu ketuk Aktifkan Kamera kembali.";
+      pesan = "Kamera sedang digunakan aplikasi lain. Tutup aplikasi tersebut, lalu ketuk Aktifkan Kamera kembali";
     } else {
-      pesan = "Kamera tidak dapat dibuka. Silakan muat ulang halaman, lalu coba kembali.";
+      pesan = "Kamera tidak dapat dibuka. Silakan muat ulang halaman, lalu coba kembali";
     }
     teksPlaceholder.textContent = "Kamera belum aktif";
     setCatatan(pesan, "peringatan");
@@ -105,7 +105,7 @@
   function mulaiKamera() {
     if (sedangMembuka) return;
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      setCatatan("Browser ini tidak mendukung akses kamera. Buka halaman ini langsung melalui Chrome (Android) atau Safari (iPhone), bukan dari dalam aplikasi lain.", "peringatan");
+      setCatatan("Browser ini tidak mendukung akses kamera. Buka halaman ini langsung melalui Chrome (Android) atau Safari (iPhone), bukan dari dalam aplikasi lain", "peringatan");
       return;
     }
     if (!siap) { aturTombol(); return; }
@@ -142,7 +142,7 @@
         return video.play();
       })
       .then(function () {
-        setCatatan("Posisikan wajah Anda di dalam bingkai, lalu ketuk Ambil Foto.", "info");
+        setCatatan("Posisikan wajah Anda di dalam bingkai, lalu ketuk Ambil Foto", "info");
         return hitungKamera();
       })
       .catch(function (err) {
@@ -167,7 +167,7 @@
     var lebarAsli = video.videoWidth;
     var tinggiAsli = video.videoHeight;
     if (!lebarAsli || !tinggiAsli) {
-      setCatatan("Kamera belum siap. Tunggu sebentar, lalu ketuk Ambil Foto kembali.", "peringatan");
+      setCatatan("Kamera belum siap. Tunggu sebentar, lalu ketuk Ambil Foto kembali", "peringatan");
       return;
     }
 
@@ -216,12 +216,12 @@
           latitude: lokasi.latitude,
           longitude: lokasi.longitude
         });
-        setCatatan("Foto berhasil diambil. Periksa hasilnya, atau ketuk Ambil Ulang apabila kurang jelas.", "info");
+        setCatatan("Foto berhasil diambil. Periksa hasilnya, atau ketuk Ambil Ulang apabila kurang jelas", "info");
       })
       .catch(function () {
         placeholder.hidden = false;
         teksPlaceholder.textContent = "Foto gagal diproses";
-        setCatatan("Foto gagal diproses. Ketuk Aktifkan Kamera untuk mencoba kembali.", "peringatan");
+        setCatatan("Foto gagal diproses. Ketuk Aktifkan Kamera untuk mencoba kembali", "peringatan");
       })
       .then(function () {
         sedangProses = false;
@@ -265,7 +265,7 @@
     if (document.hidden && stream) {
       hentikanStream();
       placeholder.hidden = false;
-      teksPlaceholder.textContent = "Kamera dijeda. Ketuk Aktifkan Kamera untuk melanjutkan.";
+      teksPlaceholder.textContent = "Kamera dijeda. Ketuk Aktifkan Kamera untuk melanjutkan";
       setCatatan("");
       aturTombol();
     }

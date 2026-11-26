@@ -130,7 +130,7 @@
 
       ctx.fillStyle = MUTED;
       ctx.font = "600 " + Math.round(7.6 * mm) + "px " + FONT;
-      ctx.fillText("Registrasi Kehadiran Tamu", W / 2, 101 * mm);
+      ctx.fillText("Registrasi Kehadiran Pengunjung", W / 2, 101 * mm);
 
       // Bingkai + QR
       var bingkai = 100 * mm, xB = (W - bingkai) / 2, yB = 111 * mm;
@@ -159,7 +159,7 @@
       // Deskripsi
       ctx.fillStyle = TEXT;
       ctx.font = "500 " + Math.round(5.9 * mm) + "px " + FONT;
-      var baris = bungkus(ctx, "Silakan pindai QR Code menggunakan kamera smartphone Anda untuk melakukan registrasi kunjungan.", 150 * mm);
+      var baris = bungkus(ctx, "Silakan pindai QR Code menggunakan kamera smartphone Anda untuk melakukan registrasi kunjungan", 150 * mm);
       var yDesk = yCta + tinggiCta + 12 * mm;
       baris.forEach(function (b, i) { ctx.fillText(b, W / 2, yDesk + i * 9 * mm); });
 

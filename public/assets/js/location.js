@@ -38,11 +38,11 @@
     if (isIOS) {
       return "Cara mengizinkan di iPhone: buka Pengaturan, pilih Privasi & Keamanan, lalu Layanan Lokasi. " +
         "Pastikan Layanan Lokasi aktif, lalu pada Situs Web Safari pilih \"Saat Menggunakan App\". " +
-        "Setelah itu muat ulang halaman ini dan ketuk Coba Lagi.";
+        "Setelah itu muat ulang halaman ini dan ketuk Coba Lagi";
     }
     return "Cara mengizinkan di Android: ketuk ikon di sebelah kiri alamat situs pada Chrome, pilih Izin, " +
       "lalu ubah Lokasi menjadi Izinkan. Pastikan fitur Lokasi pada ponsel juga aktif. " +
-      "Setelah itu muat ulang halaman ini dan ketuk Coba Lagi.";
+      "Setelah itu muat ulang halaman ini dan ketuk Coba Lagi";
   }
 
   function formatAngka(n) { return n.toFixed(6); }
@@ -71,7 +71,7 @@
 
     setStatus("success", "Lokasi berhasil terdeteksi");
     setCatatan(akurasi > AKURASI_RENDAH
-      ? "Akurasi lokasi rendah (± " + akurasi + " meter). Anda tetap dapat melanjutkan, atau ketuk Perbarui Lokasi di dekat jendela atau area terbuka."
+      ? "Akurasi lokasi rendah (± " + akurasi + " meter). Anda tetap dapat melanjutkan, atau ketuk Perbarui Lokasi di dekat jendela atau area terbuka"
       : "");
     tombol.textContent = "Perbarui Lokasi";
 
@@ -114,10 +114,10 @@
       setCatatan(panduanIzin());
     } else if (kode === 2) {
       setStatus("error", "Lokasi tidak dapat ditentukan");
-      setCatatan("Pastikan fitur Lokasi (GPS) pada ponsel aktif dan koneksi internet tersedia, lalu ketuk Coba Lagi.");
+      setCatatan("Pastikan fitur Lokasi (GPS) pada ponsel aktif dan koneksi internet tersedia, lalu ketuk Coba Lagi");
     } else {
       setStatus("error", "Waktu pencarian lokasi habis");
-      setCatatan("Pindah ke dekat jendela atau area terbuka, pastikan fitur Lokasi aktif, lalu ketuk Coba Lagi.");
+      setCatatan("Pindah ke dekat jendela atau area terbuka, pastikan fitur Lokasi aktif, lalu ketuk Coba Lagi");
     }
   }
 
@@ -127,7 +127,7 @@
 
     if (!("geolocation" in navigator)) {
       setStatus("error", "Perangkat tidak mendukung akses lokasi");
-      setCatatan("Gunakan browser Chrome (Android) atau Safari (iPhone) versi terbaru.");
+      setCatatan("Gunakan browser Chrome (Android) atau Safari (iPhone) versi terbaru");
       return;
     }
 

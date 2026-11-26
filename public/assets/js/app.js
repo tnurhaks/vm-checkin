@@ -138,7 +138,7 @@
   function periksaKonsistensiFoto() {
     if (!state.foto) return;
     if (state.foto.nama !== state.identitas.nama || state.foto.perusahaan !== state.identitas.perusahaan) {
-      resetFoto("Data identitas berubah setelah foto diambil. Silakan ambil ulang foto agar watermark sesuai.");
+      resetFoto("Data identitas berubah setelah foto diambil. Silakan ambil ulang foto agar watermark sesuai");
     }
   }
 
@@ -241,13 +241,13 @@
 
     $("btn-submit").disabled = !siap || state.sedangMengirim || state.terkirim;
     if (!layananSiap) {
-      $("submit-hint").textContent = "Layanan registrasi belum siap. Silakan hubungi petugas.";
+      $("submit-hint").textContent = "Layanan registrasi belum siap. Silakan hubungi petugas";
     } else if (kurang.length > 0) {
-      $("submit-hint").textContent = "Belum lengkap: " + kurang.join(", ") + ".";
+      $("submit-hint").textContent = "Belum lengkap: " + kurang.join(", ");
     } else if (menungguVerifikasi) {
-      $("submit-hint").textContent = "Menunggu verifikasi keamanan selesai.";
+      $("submit-hint").textContent = "Menunggu verifikasi keamanan selesai";
     } else {
-      $("submit-hint").textContent = "Seluruh langkah telah lengkap. Silakan kirim registrasi.";
+      $("submit-hint").textContent = "Seluruh langkah telah lengkap. Silakan kirim registrasi";
     }
     return siap;
   }
@@ -308,7 +308,7 @@
         tampilkanSukses(hasil);
       })
       .catch(function (err) {
-        tampilkanErrorKirim(err && err.pesan ? err.pesan : "Terjadi kendala koneksi. Silakan coba kembali.");
+        tampilkanErrorKirim(err && err.pesan ? err.pesan : "Terjadi kendala koneksi. Silakan coba kembali");
       })
       .finally(function () {
         state.sedangMengirim = false;
@@ -348,7 +348,7 @@
       var berpindah = state.foto && (!data || !lama ||
         data.latitude !== lama.latitude || data.longitude !== lama.longitude);
       if (berpindah) {
-        resetFoto("Lokasi diperbarui setelah foto diambil. Silakan ambil ulang foto agar watermark sesuai.");
+        resetFoto("Lokasi diperbarui setelah foto diambil. Silakan ambil ulang foto agar watermark sesuai");
         return;
       }
       perbaruiStatus();

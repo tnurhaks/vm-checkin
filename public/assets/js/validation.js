@@ -25,11 +25,11 @@
 
   function validasiNama(input) {
     var nilai = rapikan(input);
-    if (!nilai) return hasilGagal("Nama lengkap wajib diisi.");
-    if (nilai.length < 3) return hasilGagal("Nama lengkap minimal 3 karakter.");
-    if (nilai.length > 100) return hasilGagal("Nama lengkap maksimal 100 karakter.");
+    if (!nilai) return hasilGagal("Nama lengkap wajib diisi");
+    if (nilai.length < 3) return hasilGagal("Nama lengkap minimal 3 karakter");
+    if (nilai.length > 100) return hasilGagal("Nama lengkap maksimal 100 karakter");
     if (!POLA_NAMA.test(nilai)) {
-      return hasilGagal("Nama hanya boleh berisi huruf, spasi, titik, koma, apostrof, atau tanda hubung.");
+      return hasilGagal("Nama hanya boleh berisi huruf, spasi, titik, koma, apostrof, atau tanda hubung");
     }
     return hasilOk(nilai);
   }
@@ -39,11 +39,11 @@
 
   function validasiPerusahaan(input) {
     var nilai = rapikan(input).toUpperCase(); // nama perusahaan disimpan dalam huruf kapital
-    if (!nilai) return hasilGagal("Nama perusahaan wajib diisi.");
-    if (nilai.length < 2) return hasilGagal("Nama perusahaan minimal 2 karakter.");
-    if (nilai.length > 120) return hasilGagal("Nama perusahaan maksimal 120 karakter.");
+    if (!nilai) return hasilGagal("Nama perusahaan wajib diisi");
+    if (nilai.length < 2) return hasilGagal("Nama perusahaan minimal 2 karakter");
+    if (nilai.length > 120) return hasilGagal("Nama perusahaan maksimal 120 karakter");
     if (!POLA_PERUSAHAAN.test(nilai)) {
-      return hasilGagal("Nama perusahaan mengandung karakter yang tidak diperbolehkan.");
+      return hasilGagal("Nama perusahaan mengandung karakter yang tidak diperbolehkan");
     }
     return hasilOk(nilai);
   }
@@ -63,11 +63,11 @@
 
   function validasiWhatsApp(input) {
     var mentah = String(input || "").trim();
-    if (!mentah) return hasilGagal("Nomor WhatsApp wajib diisi.");
-    if (/[^\d+\s\-().]/.test(mentah)) return hasilGagal("Nomor WhatsApp hanya boleh berisi angka.");
+    if (!mentah) return hasilGagal("Nomor WhatsApp wajib diisi");
+    if (/[^\d+\s\-().]/.test(mentah)) return hasilGagal("Nomor WhatsApp hanya boleh berisi angka");
     var nilai = normalisasiWhatsApp(mentah);
     if (!nilai) {
-      return hasilGagal("Nomor WhatsApp tidak valid. Gunakan nomor seluler Indonesia, contoh 0812 3456 7890.");
+      return hasilGagal("Nomor WhatsApp tidak valid. Gunakan nomor seluler Indonesia, contoh 0812 3456 7890");
     }
     return hasilOk(nilai);
   }
@@ -115,16 +115,16 @@
   // Mengembalikan nilai yang disimpan: isi daftar, atau "Lainnya: <isian>".
   function validasiPilihan(daftar, label, pilihan, isianLainnya) {
     var p = String(pilihan || "");
-    if (!p) return hasilGagal(label + " wajib dipilih.");
+    if (!p) return hasilGagal(label + " wajib dipilih");
     if (p === PILIHAN_LAINNYA) {
       var isi = rapikan(isianLainnya);
-      if (!isi) return hasilGagal("Sebutkan " + label.toLowerCase() + " Anda.");
-      if (isi.length < 2) return hasilGagal(label + " minimal 2 karakter.");
-      if (isi.length > 80) return hasilGagal(label + " maksimal 80 karakter.");
-      if (!POLA_PERUSAHAAN.test(isi)) return hasilGagal(label + " mengandung karakter yang tidak diperbolehkan.");
+      if (!isi) return hasilGagal("Sebutkan " + label.toLowerCase() + " Anda");
+      if (isi.length < 2) return hasilGagal(label + " minimal 2 karakter");
+      if (isi.length > 80) return hasilGagal(label + " maksimal 80 karakter");
+      if (!POLA_PERUSAHAAN.test(isi)) return hasilGagal(label + " mengandung karakter yang tidak diperbolehkan");
       return hasilOk(PILIHAN_LAINNYA + ": " + isi);
     }
-    if (daftar.indexOf(p) === -1) return hasilGagal(label + " tidak valid.");
+    if (daftar.indexOf(p) === -1) return hasilGagal(label + " tidak valid");
     return hasilOk(p);
   }
 

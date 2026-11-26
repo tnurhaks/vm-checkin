@@ -251,3 +251,16 @@ select option { color: var(--text); }
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }
 }
+
+/* Paragraf panjang rata kiri-kanan (justify); baris terakhir tetap rata kiri */
+.welcome p,
+.card-head p,
+.field-hint,
+.note,
+.alert,
+.disclaimer p,
+.doc p:not(.doc-meta):not(.doc-back),
+.doc li {
+  text-align: justify;
+  text-justify: inter-word;
+}
